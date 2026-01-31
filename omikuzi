@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        .body {
+            text-align: center;
+        }
+    </style>
+    <title>SJ273のポートフォリオ - おみくじ</title>
+</head>
+<body>
+    <div class="body">
+        <h1>404 Not Found Error!!</h1>
+        <p>お探しのページは見つかりませんでした。</p>
+        <br>
+        <p><img src="pen1_87.gif"></p>
+        <br>
+        <p>どこだここ？</p>
+        <br>
+        <p><a href="/">ホームに戻る</a></p>
+    </div>
+</body>
+</html>
