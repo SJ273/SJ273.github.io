@@ -15,7 +15,7 @@
         <h2>結果</h2>
         <h1><div id="text"></div></h1>
         <br>
-        <p><img src="oth_pen27.gif"></p>
+        <img id="randomImage" src="">
         <br>
         <p><div id="random"></div></p>
         <br>
@@ -45,6 +45,19 @@
 
     const randomWord2 = words2[Math.floor(Math.random() * words2.length)];
     document.getElementById("random").textContent = randomWord2;
+    const images = [
+      "dan_pen14.gif",
+      "mus_pen06.gif",
+      "oth_pen18.gif",
+      "oth_pen27.gif",
+      "oth_pen52.gif",
+      "oth_pen54.gif",
+      "pen1_76.gif",
+      "pen1_78.gif"
+    ];
+
+    const randomIndex = Math.floor(Math.random() * images.length);
+    document.getElementById("randomImage").src = images[randomIndex];
   </script>
 </body>
 </html>
