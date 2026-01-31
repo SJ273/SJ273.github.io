@@ -17,8 +17,9 @@
         <br>
         <p><img src="oth_pen27.gif"></p>
         <br>
-        <p>何が出たかな？</p>
+        <p><div id="random"></div></p>
         <br>
+        <p><a href="/omikuji">もう一度引く</a></p>
         <p><a href="/">ホームに戻る</a></p>
     </div>
   <script>
@@ -34,6 +35,18 @@
 
     const randomWord = words[Math.floor(Math.random() * words.length)];
     document.getElementById("text").textContent = randomWord;
+  </script>
+  <script>
+    const words = [
+      "何が出たかな？",
+      "ここの文字もランダムで出るようになってたりする",
+      "1日に何度でも引けるおみくじってなんだよ",
+      "良かったらおめでとう、悪かったらドンマイ",
+      "このぺそぎん目閉じながらお手玉してる",
+    ];
+
+    const randomWord = words[Math.floor(Math.random() * words.length)];
+    document.getElementById("random").textContent = randomWord;
   </script>
 </body>
 </html>
