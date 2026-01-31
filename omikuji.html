@@ -12,14 +12,28 @@
 </head>
 <body>
     <div class="body">
-        <h1>404 Not Found Error!!</h1>
-        <p>お探しのページは見つかりませんでした。</p>
+        <h1>結果</h1>
+        <div id="text"></div>
         <br>
-        <p><img src="pen1_87.gif"></p>
+        <p><img src="oth_pen27.gif"></p>
         <br>
-        <p>どこだここ？</p>
+        <p>何が出たかな？</p>
         <br>
         <p><a href="/">ホームに戻る</a></p>
     </div>
+  <script>
+    const words = [
+      "大吉",
+      "中吉",
+      "小吉",
+      "吉",
+      "末吉",
+      "凶",
+      "大凶"
+    ];
+
+    const randomWord = words[Math.floor(Math.random() * words.length)];
+    document.getElementById("text").textContent = randomWord;
+  </script>
 </body>
 </html>
