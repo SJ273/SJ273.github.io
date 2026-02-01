@@ -1,7 +1,3 @@
-/* --------------------
-        全体
--------------------- */
-
 :root {
   --theme-color: #65BBE9;
 }
@@ -19,41 +15,48 @@ body {
   margin: 0;
   padding: 30px;
   color: #333;
+  text-align: center;
 }
-
-/* --------------------
-        見出し
--------------------- */
 
 h1, h2, h3 {
   color: var(--theme-color);
   border-bottom: dashed 0.1em var(--theme-color);
 }
 
-/* --------------------
-        リンク
--------------------- */
+h1.section-title {
+  visibility: hidden;
+}
 
 a {
   color: var(--theme-color);
   text-decoration: none;
 }
 
-/* --------------------
-        リスト
--------------------- */
+a.hidden-link {
+  color: transparent;
+  text-decoration: none;
+}
 
 ul {
   list-style: none;
+  padding: 0;
+  margin: 0;
 }
+
 li:before {
   content: "・";
   color: var(--theme-color);
 }
 
-/* --------------------
-          表
--------------------- */
+ul, li {
+  display: block;        
+  margin: 4px auto;      
+  width: fit-content;
+  background-color: #87cefa; 
+  color: #fff;               
+  padding: 6px 12px;
+  border-radius: 5px;
+}
 
 table {
   border-spacing: 0;
@@ -61,17 +64,60 @@ table {
   border: solid 1px #f0f0f0;
   min-width: 70%;
 }
+
 tr {
   background-color: #fff;
 }
+
 tr:nth-child(2n) {
   background-color: #f9f9f9;
 }
+
 th {
   background: var(--theme-color);
   color: #fff;
 }
+
 th, td {
   border: solid 1px #f0f0f0;
   padding: 0.5rem;
+}
+
+.marquee-wrap {
+  width: 100%;
+  overflow: hidden;
+  border-top: 1px solid #aaa;
+  border-bottom: 1px solid #aaa;
+  margin: 20px 0;
+  background-color: #87cefa;
+}
+
+.marquee {
+  display: flex;
+  width: max-content;
+  animation: marquee linear infinite;
+}
+
+.marquee span {
+  white-space: nowrap;
+  padding-right: 2rem;
+  font-size: 13px;
+  color: #fff;
+  font-family: monospace;
+}
+
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to   { transform: translateX(var(--move-distance)); }
+}
+
+@media (max-width: 600px) {
+  .marquee span {
+    font-size: 11px;
+  }
+}
+
+img {
+  display: block;
+  margin: 0 auto;
 }
