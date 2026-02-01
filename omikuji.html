@@ -12,6 +12,9 @@
     #text {
        white-space: pre-line;
     }
+    #notice {
+       white-space: pre-line;
+    }
   </style>
 </head>
 <body>
@@ -37,7 +40,7 @@ const words = [
   "今日は何が出るかな？",
   "HTMLで色々作るの楽しいですね",
   "寿司が食べたくなってきた",
-  "稀に超大吉か超大凶が出るかもしれない\nもし出たら超ラッキーだよ 後者だとしてもね",
+  "稀に超大吉か超大凶が出るよ\n出たら超ラッキー 後者だとしてもね",
   "ここの文字と上のペンギンはランダムで変わるよ",
   "1日1回！"
 ];
@@ -87,7 +90,7 @@ window.onload = function () {
     lockButton();
     startCountdown();
     document.getElementById("notice").textContent =
-      "今日はもうおみくじを引いています。";
+      "今日はもうおみくじを引いています。\n午前０時になると再び引けるようになります。";
   }
 };
 
@@ -149,7 +152,7 @@ function getRemainingTimeText() {
   const m = Math.floor((diff / (1000 * 60)) % 60);
   const s = Math.floor((diff / 1000) % 60);
 
-  return `もう一度引けるまで残り${h}時間${m}分${s}秒`;
+  return `次に引けるまで残り${h}時間${m}分${s}秒`;
 }
 
 function startCountdown() {
