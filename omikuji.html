@@ -21,18 +21,25 @@
 <p id="date"></p>
 <p id="result"></p>
 <p id="comment"></p>
+<br>
 <p id="message"></p>
+<p id="notice"></p>
+<br>
+<img id="randomImage" src="">
+<p><div id="text"></div></p>
+<br>
+<p><a href="/">ホームに戻る</a></p>
 
 <script>
 const comments = {
   "超大吉": [
-    "すげえええええ！！！！！！！！！！"
+    "すげええええええええええ！！！！！！！！！！"
   ],
   "大吉": [
-    "おめでとう！！！"
+    "おめでとう！！！！！"
   ],
   "中吉": [
-    "良きですな"
+    "今日は良い日！"
   ],
   "小吉": [
     "小さなラッキー。"
@@ -44,10 +51,10 @@ const comments = {
     "これって良いの？悪いの？"
   ],
   "凶": [
-    "ありゃあ…"
+    "ありゃあ………"
   ],
   "大凶": [
-    "次は良いもの出てくるよ"
+    "トラブルに注意！"
   ],
   "超大凶": [
     "これはむしろラッキー！"
@@ -78,11 +85,6 @@ function showTodayDate() {
 
 function omikuji() {
   const savedDay = localStorage.getItem("omikujiDay");
-
-  if (savedDay === todayStr) {
-    document.getElementById("message").textContent =
-      "今日はもうおみくじを引いています。";
-    return;
   }
 
   const r = Math.random() * 100;
@@ -131,6 +133,9 @@ function lockButton() {
   document.getElementById("btn").disabled = true;
 }
 
+document.getElementById("notice").textContent =
+  "今日はもうおみくじを引いています。";
+    
 function getRemainingTimeText() {
   const now = new Date();
   const tomorrow = new Date();
@@ -159,6 +164,35 @@ function startCountdown() {
       getRemainingTimeText();
   }, 1000);
 }
+
+    const randomWord = words[Math.floor(Math.random() * words.length)];
+    document.getElementById("text").textContent = randomWord;
+    const words = [
+      "何が出たかな？",
+      "1日に何度でも引けるおみくじって良いのか",
+      "良かったらおめでとう\n悪かったらドンマイ",
+      "ホームでも言ったけどぺそぎんとかこの文字も変わりまくるよ",
+      "HTMLで色々作るの楽しいですね",
+      "スクショしていいよ\nいつ使うんだよと思うかもしれないが",
+      "寿司が食べたくなってきた",
+      "稀に超大吉か超大凶が出るかもしれない\nもし出たら超ラッキーだよ　後者だとしてもね"
+    ];
+
+    const randomPenguin = pesoguin[Math.floor(Math.random() * pesoguin.length)];
+    document.getElementById("random").textContent = randomPenguin;
+    const images = [
+      "dan_pen14.gif",
+      "mus_pen06.gif",
+      "oth_pen18.gif",
+      "oth_pen27.gif",
+      "oth_pen52.gif",
+      "oth_pen54.gif",
+      "pen1_76.gif",
+      "pen1_23.gif"
+    ];
+
+    const randomIndex = Math.floor(Math.random() * images.length);
+    document.getElementById("randomImage").src = images[randomIndex];
 </script>
 </body>
 </html>
