@@ -16,98 +16,148 @@
 <body>
     <div class="body">
 <h2>今日のおみくじ</h2>
-<button onclick="omikuji()">おみくじを引く</button>
+<button id="btn" onclick="omikuji()">おみくじを引く</button>
 
+<p id="date"></p>
 <p id="result"></p>
 <p id="comment"></p>
+<p id="message"></p>
 
 <script>
 const comments = {
-  "大吉": ["最高の日！", "今日は無敵！"],
-  "中吉": ["順調だよ", "いい流れ"],
-  "小吉": ["コツコツいこう"],
-  "吉": ["安定の日"],
-  "凶": ["無理しないでね"]
+  "超大吉": [
+    "すげえええええ！！！！！！！！！！"
+  ],
+  "大吉": [
+    "おめでとう！！！"
+  ],
+  "中吉": [
+    "良きですな"
+  ],
+  "小吉": [
+    "小さなラッキー。"
+  ],
+  "吉": [
+    "今日はいつも通りが一番。"
+  ],
+  "末吉": [
+    "これって良いの？悪いの？"
+  ],
+  "凶": [
+    "ありゃあ…"
+  ]
+  "大凶": [
+    "次は良いもの出てくるよ"
+  ],
+  "超大凶": [
+    "これはむしろラッキー！"
+  ]
 };
 
-const today = new Date();
-const todayStr = today.toDateString();
+const todayStr = new Date().toDateString();
+let timerId = null;
 
-// ページ読み込み時
 window.onload = function () {
+  showTodayDate();
+
   const savedDay = localStorage.getItem("omikujiDay");
   const savedResult = localStorage.getItem("omikujiResult");
 
   if (savedDay === todayStr && savedResult) {
     showResult(savedResult);
     lockButton();
-    showRemainingTime();
+    startCountdown();
   }
 };
 
-// おみくじ
+function showTodayDate() {
+  const now = new Date();
+  document.getElementById("date").textContent =
+    `日付：${now.getFullYear()}年${now.getMonth() + 1}月${now.getDate()}日`;
+}
+
 function omikuji() {
   const savedDay = localStorage.getItem("omikujiDay");
 
   if (savedDay === todayStr) {
     document.getElementById("message").textContent =
-      "今日はもう引いています。";
-    showRemainingTime();
+      "今日はもうおみくじを引いています。";
     return;
   }
 
   const r = Math.random() * 100;
   let result = "";
 
-  if (r < 10) result = "大吉";
-  else if (r < 30) result = "中吉";
-  else if (r < 60) result = "小吉";
-  else if (r < 85) result = "吉";
-  else result = "凶";
+if (r < 1) {
+  result = "超大吉";
+} else if (r < 5) {
+  result = "大吉";
+} else if (r < 20) {
+  result = "中吉";
+} else if (r < 40) {
+  result = "小吉";
+} else if (r < 60) {
+  result = "吉";
+} else if (r < 75) {
+  result = "末吉";
+} else if (r < 90) {
+  result = "凶";
+} else if (r < 98) {
+  result = "大凶";
+} else {
+  result = "超大凶";
+}
 
   localStorage.setItem("omikujiDay", todayStr);
   localStorage.setItem("omikujiResult", result);
 
   showResult(result);
   lockButton();
-  showRemainingTime();
+  startCountdown();
 }
 
-// 表示
 function showResult(result) {
-  const now = new Date();
-
-  document.getElementById("date").textContent =
-    `日付：${now.getFullYear()}年${now.getMonth()+1}月${now.getDate()}日`;
-
   document.getElementById("result").textContent =
-    `今日の運勢は…「${result}」！`;
+    `今日の運勢：${result}`;
 
-const list = comments[result];
-const randomIndex = Math.floor(Math.random() * list.length);
-document.getElementById("comment").textContent = list[randomIndex];
+  const list = comments[result];
+  const index = Math.floor(Math.random() * list.length);
+  document.getElementById("comment").textContent = list[index];
 
   document.getElementById("message").textContent = "";
 }
 
-// ボタン無効化
 function lockButton() {
-  document.querySelector("button").disabled = true;
+  document.getElementById("btn").disabled = true;
 }
 
-// 残り時間表示
-function showRemainingTime() {
+function getRemainingTimeText() {
   const now = new Date();
   const tomorrow = new Date();
   tomorrow.setHours(24, 0, 0, 0);
 
   const diff = tomorrow - now;
-  const hours = Math.floor(diff / (1000 * 60 * 60));
-  const minutes = Math.floor((diff / (1000 * 60)) % 60);
-  const seconds = Math.floor((diff / (1000 * 60)) % 60);
 
-  document.getElementById("message").textContent +=
-    ` もう一度引けるまで残り${hours}時間${minutes}分${seconds}秒`;
+  const h = Math.floor(diff / (1000 * 60 * 60));
+  const m = Math.floor((diff / (1000 * 60)) % 60);
+  const s = Math.floor((diff / 1000) % 60);
+
+  if (diff <= 0) {
+    clearInterval(timerId);
+    localStorage.clear();
+    location.reload();
+  }
+
+  return `もう一度引けるまで残り${h}時間${m}分${s}秒`;
+}
+
+function startCountdown() {
+  if (timerId !== null) return;
+
+  timerId = setInterval(() => {
+    document.getElementById("message").textContent =
+      getRemainingTimeText();
+  }, 1000);
 }
 </script>
 </body>
