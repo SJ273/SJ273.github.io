@@ -22,6 +22,14 @@
 <p id="comment"></p>
 
 <script>
+const comments = {
+  "大吉": ["最高の日！", "今日は無敵！"],
+  "中吉": ["順調だよ", "いい流れ"],
+  "小吉": ["コツコツいこう"],
+  "吉": ["安定の日"],
+  "凶": ["無理しないでね"]
+};
+
 const today = new Date();
 const todayStr = today.toDateString();
 const savedDay = localStorage.getItem("omikujiDay");
@@ -61,18 +69,10 @@ function omikuji() {
   showResult(result);
 }
 
-function showResult(result) {
-    document.getElementById("result").textContent =
-    `今日の運勢は…「${result}」！`;
+const list = comments[result];
+const randomIndex = Math.floor(Math.random() * list.length);
+document.getElementById("comment").textContent = list[randomIndex];
 
-  if (result === "凶") {
-    document.getElementById("comment").textContent =
-      "無理せず慎重に行動しよう。今日は準備の日！";
-  } else {
-    document.getElementById("comment").textContent =
-      "いい一日になりそうだね 👍";
-  }
-}
 </script>
 </body>
 </html>
