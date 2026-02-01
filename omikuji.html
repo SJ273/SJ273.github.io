@@ -15,55 +15,69 @@
 </head>
 <body>
     <div class="body">
-        <h2>結果</h2>
-        <h1><div id="text"></div></h1>
-        <br>
-        <img id="randomImage" src="">
-        <br>
-        <p><div id="random"></div></p>
-        <br>
-        <p><a href="/omikuji">もう一度引く</a></p>
-        <p><a href="/">ホームに戻る</a></p>
-    </div>
-  <script>
-    const words = [
-      "大吉",
-      "中吉",
-      "小吉",
-      "吉",
-      "末吉",
-      "凶",
-      "大凶"
-    ];
+<h2>今日のおみくじ</h2>
+<button onclick="omikuji()">おみくじを引く</button>
 
-    const randomWord = words[Math.floor(Math.random() * words.length)];
-    document.getElementById("text").textContent = randomWord;
-    const words2 = [
-      "何が出たかな？",
-      "1日に何度でも引けるおみくじって良いのか",
-      "良かったらおめでとう\n悪かったらドンマイ",
-      "ホームでも言ったけどぺそぎんとかこの文字も変わりまくるよ",
-      "HTMLで色々作るの楽しいですね",
-      "スクショしていいよ\nいつ使うんだよと思うかもしれないが",
-      "寿司が食べたくなってきた",
-      "稀に超大吉か超大凶が出るかもしれない\nもし出たら超ラッキーだよ　後者だとしてもね"
-    ];
+<p id="date"></p>
+<p id="result"></p>
+<p id="comment"></p>
 
-    const randomWord2 = words2[Math.floor(Math.random() * words2.length)];
-    document.getElementById("random").textContent = randomWord2;
-    const images = [
-      "dan_pen14.gif",
-      "mus_pen06.gif",
-      "oth_pen18.gif",
-      "oth_pen27.gif",
-      "oth_pen52.gif",
-      "oth_pen54.gif",
-      "pen1_76.gif",
-      "pen1_23.gif"
-    ];
+<script>
+const today = new Date();
+const todayStr = today.toDateString();
+const savedDay = localStorage.getItem("omikujiDay");
+const savedResult = localStorage.getItem("omikujiResult");
 
-    const randomIndex = Math.floor(Math.random() * images.length);
-    document.getElementById("randomImage").src = images[randomIndex];
-  </script>
+// ページを開いた時に今日の結果があれば表示
+if (savedDay === todayStr && savedResult) {
+  showResult(savedResult);
+}
+
+// おみくじを引く処理
+function omikuji() {
+  if (savedDay === todayStr) {
+    document.getElementById("comment").textContent =
+      "今日はもう引いてるよ！また明日ね 🌙";
+    return;
+  }
+
+  const r = Math.random() * 100;
+  let result = "";
+
+  if (r < 10) {
+    result = "大吉";
+  } else if (r < 30) {
+    result = "中吉";
+  } else if (r < 60) {
+    result = "小吉";
+  } else if (r < 85) {
+    result = "吉";
+  } else {
+    result = "凶";
+  }
+
+  localStorage.setItem("omikujiDay", todayStr);
+  localStorage.setItem("omikujiResult", result);
+
+  showResult(result);
+}
+
+// 表示用関数
+function showResult(result) {
+  document.getElementById("date").textContent =
+    `日付：${today.getFullYear()}年${today.getMonth()+1}月${today.getDate()}日`;
+
+  document.getElementById("result").textContent =
+    `今日の運勢は…「${result}」！`;
+
+  if (result === "凶") {
+    document.getElementById("comment").textContent =
+      "無理せず慎重に行動しよう。今日は準備の日！";
+  } else {
+    document.getElementById("comment").textContent =
+      "いい一日になりそうだね 👍";
+  }
+}
+</script>
 </body>
 </html>
