@@ -32,47 +32,83 @@ const comments = {
 
 const today = new Date();
 const todayStr = today.toDateString();
-const savedDay = localStorage.getItem("omikujiDay");
-const savedResult = localStorage.getItem("omikujiResult");
 
-if (savedDay === todayStr && savedResult) {
-  showResult(savedResult);
-}
+// ページ読み込み時
+window.onload = function () {
+  const savedDay = localStorage.getItem("omikujiDay");
+  const savedResult = localStorage.getItem("omikujiResult");
 
+  if (savedDay === todayStr && savedResult) {
+    showResult(savedResult);
+    lockButton();
+    showRemainingTime();
+  }
+};
+
+// おみくじ
 function omikuji() {
   const savedDay = localStorage.getItem("omikujiDay");
 
   if (savedDay === todayStr) {
-    document.getElementById("comment").textContent =
-      "今日はもう引いています。また明日来てください。";
+    document.getElementById("message").textContent =
+      "今日はもう引いています。";
+    showRemainingTime();
     return;
   }
 
   const r = Math.random() * 100;
   let result = "";
 
-  if (r < 10) {
-    result = "大吉";
-  } else if (r < 30) {
-    result = "中吉";
-  } else if (r < 60) {
-    result = "小吉";
-  } else if (r < 85) {
-    result = "吉";
-  } else {
-    result = "凶";
-  }
+  if (r < 10) result = "大吉";
+  else if (r < 30) result = "中吉";
+  else if (r < 60) result = "小吉";
+  else if (r < 85) result = "吉";
+  else result = "凶";
 
   localStorage.setItem("omikujiDay", todayStr);
   localStorage.setItem("omikujiResult", result);
 
   showResult(result);
+  lockButton();
+  showRemainingTime();
 }
+
+// 表示
+function showResult(result) {
+  const now = new Date();
+
+  document.getElementById("date").textContent =
+    `日付：${now.getFullYear()}年${now.getMonth()+1}月${now.getDate()}日`;
+
+  document.getElementById("result").textContent =
+    `今日の運勢は…「${result}」！`;
 
 const list = comments[result];
 const randomIndex = Math.floor(Math.random() * list.length);
 document.getElementById("comment").textContent = list[randomIndex];
 
+  document.getElementById("message").textContent = "";
+}
+
+// ボタン無効化
+function lockButton() {
+  document.querySelector("button").disabled = true;
+}
+
+// 残り時間表示
+function showRemainingTime() {
+  const now = new Date();
+  const tomorrow = new Date();
+  tomorrow.setHours(24, 0, 0, 0);
+
+  const diff = tomorrow - now;
+  const hours = Math.floor(diff / (1000 * 60 * 60));
+  const minutes = Math.floor((diff / (1000 * 60)) % 60);
+  const seconds = Math.floor((diff / (1000 * 60)) % 60);
+
+  document.getElementById("message").textContent +=
+    ` もう一度引けるまで残り${hours}時間${minutes}分${seconds}秒`;
+}
 </script>
 </body>
 </html>
