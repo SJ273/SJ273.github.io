@@ -13,11 +13,11 @@
 </head>
 <body>
 
-<h2>今日のおみくじ</h2>
+<h1>今日のおみくじ</h1>
 <button id="btn" onclick="omikuji()">おみくじを引く</button>
 
-<p id="date"></p>
-<p id="result"></p>
+<h2><p id="date"></p></h2>
+<h1><p id="result"></p></h1>
 <p id="comment"></p>
 
 <p id="message"></p>
@@ -34,7 +34,8 @@ const words = [
   "HTMLで色々作るの楽しいですね",
   "スクショしていいよ\nいつ使うんだよと思うかもしれないが",
   "寿司が食べたくなってきた",
-  "稀に超大吉か超大凶が出るかもしれない\nもし出たら超ラッキーだよ"
+  "稀に超大吉か超大凶が出るかもしれない\nもし出たら超ラッキーだよ",
+  "ここの文字と上のペンギンはランダムで変わるよ"
 ];
 
 const images = [
@@ -114,7 +115,7 @@ function omikuji() {
 
 function showResult(result) {
   document.getElementById("result").textContent =
-    `今日の運勢：${result}`;
+    `${result}`;
 
   const list = comments[result];
   document.getElementById("comment").textContent =
