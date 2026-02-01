@@ -16,9 +16,8 @@
 <body>
     <div class="body">
 <h2>今日のおみくじ</h2>
-<button onclick="omikuji()">おみくじ引く</button>
+<button onclick="omikuji()">おみくじを引く</button>
 
-<p id="date"></p>
 <p id="result"></p>
 <p id="comment"></p>
 
@@ -63,10 +62,7 @@ function omikuji() {
 }
 
 function showResult(result) {
-  document.getElementById("date").textContent =
-    `日付：${today.getFullYear()}年${today.getMonth()+1}月${today.getDate()}日`;
-
-  document.getElementById("result").textContent =
+    document.getElementById("result").textContent =
     `今日の運勢は…「${result}」！`;
 
   if (result === "凶") {
