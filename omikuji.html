@@ -1,64 +1,63 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <style>
-        .body {
-            text-align: center;
-        }
-        #random {
-            white-space: pre-line;
-        }
-    </style>
-    <title>SJ273のポートフォリオ - おみくじ</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SJ273のポートフォリオ - おみくじ</title>
+  <style>
+    body {
+      text-align: center;
+      font-family: sans-serif;
+    }
+  </style>
 </head>
 <body>
-    <div class="body">
+
 <h2>今日のおみくじ</h2>
 <button id="btn" onclick="omikuji()">おみくじを引く</button>
 
 <p id="date"></p>
 <p id="result"></p>
 <p id="comment"></p>
-<br>
+
 <p id="message"></p>
 <p id="notice"></p>
-<br>
+
 <img id="randomImage" src="">
-<p><div id="text"></div></p>
-<br>
+<p id="text"></p>
+
 <p><a href="/">ホームに戻る</a></p>
 
 <script>
+const words = [
+  "今日は何が出るかな？",
+  "HTMLで色々作るの楽しいですね",
+  "スクショしていいよ\nいつ使うんだよと思うかもしれないが",
+  "寿司が食べたくなってきた",
+  "稀に超大吉か超大凶が出るかもしれない\nもし出たら超ラッキーだよ"
+];
+
+const images = [
+  "dan_pen14.gif",
+  "mus_pen06.gif",
+  "oth_pen18.gif",
+  "oth_pen27.gif",
+  "oth_pen52.gif",
+  "oth_pen54.gif",
+  "pen1_76.gif",
+  "pen1_23.gif"
+];
+
 const comments = {
-  "超大吉": [
-    "すげええええええええええ！！！！！！！！！！"
-  ],
-  "大吉": [
-    "おめでとう！！！！！"
-  ],
-  "中吉": [
-    "今日は良い日！"
-  ],
-  "小吉": [
-    "小さなラッキー。"
-  ],
-  "吉": [
-    "今日はいつも通りが一番。"
-  ],
-  "末吉": [
-    "これって良いの？悪いの？"
-  ],
-  "凶": [
-    "ありゃあ………"
-  ],
-  "大凶": [
-    "トラブルに注意！"
-  ],
-  "超大凶": [
-    "これはむしろラッキー！"
-  ]
+  "超大吉": ["すげええええええええええ！！！！！！！！！！"],
+  "大吉": ["おめでとう！！！！！"],
+  "中吉": ["今日は良い日！"],
+  "小吉": ["小さなラッキー。"],
+  "吉": ["今日はいつも通りが一番。"],
+  "末吉": ["これって良いの？悪いの？"],
+  "凶": ["ありゃあ………"],
+  "大凶": ["トラブルに注意！"],
+  "超大凶": ["これはむしろラッキー！"]
 };
 
 const todayStr = new Date().toDateString();
@@ -67,6 +66,12 @@ let timerId = null;
 window.onload = function () {
   showTodayDate();
 
+  document.getElementById("text").textContent =
+    words[Math.floor(Math.random() * words.length)];
+
+  document.getElementById("randomImage").src =
+    images[Math.floor(Math.random() * images.length)];
+
   const savedDay = localStorage.getItem("omikujiDay");
   const savedResult = localStorage.getItem("omikujiResult");
 
@@ -74,41 +79,30 @@ window.onload = function () {
     showResult(savedResult);
     lockButton();
     startCountdown();
+    document.getElementById("notice").textContent =
+      "今日はもうおみくじを引いています。";
   }
 };
 
 function showTodayDate() {
   const now = new Date();
   document.getElementById("date").textContent =
-    `日付：${now.getFullYear()}年${now.getMonth() + 1}月${now.getDate()}日`;
+    `${now.getFullYear()}年${now.getMonth() + 1}月${now.getDate()}日`;
 }
 
 function omikuji() {
-  const savedDay = localStorage.getItem("omikujiDay");
-  }
-
   const r = Math.random() * 100;
   let result = "";
 
-if (r < 1) {
-  result = "超大吉";
-} else if (r < 5) {
-  result = "大吉";
-} else if (r < 20) {
-  result = "中吉";
-} else if (r < 40) {
-  result = "小吉";
-} else if (r < 60) {
-  result = "吉";
-} else if (r < 75) {
-  result = "末吉";
-} else if (r < 90) {
-  result = "凶";
-} else if (r < 98) {
-  result = "大凶";
-} else {
-  result = "超大凶";
-}
+  if (r < 1) result = "超大吉";
+  else if (r < 5) result = "大吉";
+  else if (r < 20) result = "中吉";
+  else if (r < 40) result = "小吉";
+  else if (r < 60) result = "吉";
+  else if (r < 75) result = "末吉";
+  else if (r < 90) result = "凶";
+  else if (r < 98) result = "大凶";
+  else result = "超大凶";
 
   localStorage.setItem("omikujiDay", todayStr);
   localStorage.setItem("omikujiResult", result);
@@ -123,19 +117,14 @@ function showResult(result) {
     `今日の運勢：${result}`;
 
   const list = comments[result];
-  const index = Math.floor(Math.random() * list.length);
-  document.getElementById("comment").textContent = list[index];
-
-  document.getElementById("message").textContent = "";
+  document.getElementById("comment").textContent =
+    list[Math.floor(Math.random() * list.length)];
 }
 
 function lockButton() {
   document.getElementById("btn").disabled = true;
 }
 
-document.getElementById("notice").textContent =
-  "今日はもうおみくじを引いています。";
-    
 function getRemainingTimeText() {
   const now = new Date();
   const tomorrow = new Date();
@@ -143,56 +132,27 @@ function getRemainingTimeText() {
 
   const diff = tomorrow - now;
 
-  const h = Math.floor(diff / (1000 * 60 * 60));
-  const m = Math.floor((diff / (1000 * 60)) % 60);
-  const s = Math.floor((diff / 1000) % 60);
-
   if (diff <= 0) {
     clearInterval(timerId);
     localStorage.clear();
     location.reload();
   }
 
+  const h = Math.floor(diff / (1000 * 60 * 60));
+  const m = Math.floor((diff / (1000 * 60)) % 60);
+  const s = Math.floor((diff / 1000) % 60);
+
   return `もう一度引けるまで残り${h}時間${m}分${s}秒`;
 }
 
 function startCountdown() {
   if (timerId !== null) return;
-
   timerId = setInterval(() => {
     document.getElementById("message").textContent =
       getRemainingTimeText();
   }, 1000);
 }
-
-    const randomWord = words[Math.floor(Math.random() * words.length)];
-    document.getElementById("text").textContent = randomWord;
-    const words = [
-      "何が出たかな？",
-      "1日に何度でも引けるおみくじって良いのか",
-      "良かったらおめでとう\n悪かったらドンマイ",
-      "ホームでも言ったけどぺそぎんとかこの文字も変わりまくるよ",
-      "HTMLで色々作るの楽しいですね",
-      "スクショしていいよ\nいつ使うんだよと思うかもしれないが",
-      "寿司が食べたくなってきた",
-      "稀に超大吉か超大凶が出るかもしれない\nもし出たら超ラッキーだよ　後者だとしてもね"
-    ];
-
-    const randomPenguin = pesoguin[Math.floor(Math.random() * pesoguin.length)];
-    document.getElementById("random").textContent = randomPenguin;
-    const images = [
-      "dan_pen14.gif",
-      "mus_pen06.gif",
-      "oth_pen18.gif",
-      "oth_pen27.gif",
-      "oth_pen52.gif",
-      "oth_pen54.gif",
-      "pen1_76.gif",
-      "pen1_23.gif"
-    ];
-
-    const randomIndex = Math.floor(Math.random() * images.length);
-    document.getElementById("randomImage").src = images[randomIndex];
 </script>
+
 </body>
 </html>
