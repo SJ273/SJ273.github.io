@@ -8,7 +8,7 @@
 <style>
   body {
     text-align: center;
-    background: #ddd;
+    background: white;
     font-family: sans-serif;
   }
 
@@ -20,8 +20,10 @@
     position: relative;
     overflow: hidden;
     touch-action: none;
+
     background-image: url("background.png");
     background-size: cover;
+    background-position: center;
   }
 
   #player {
@@ -35,7 +37,6 @@
   .enemy {
     width: 40px;
     position: absolute;
-    top: -40px;
     pointer-events: none;
   }
 
@@ -47,7 +48,7 @@
   #overlay {
     position: absolute;
     inset: 0;
-    background: rgba(0,0,0,0);
+    background: rgba(0,0,0,0.7);
     display: none;
     justify-content: center;
     align-items: center;
@@ -81,8 +82,8 @@
   <div id="overlay">
     <div class="over-text">
       <p>ゲームオーバー</p>
-      <p>ハイスコア: <span id="highScore">0</span></p>
-      <button id="retry">もう一度</button>
+      <p>あなたのハイスコア: <span id="highScore">0</span></p>
+      <button id="retry"もう一度</button>
     </div>
   </div>
 </div>
@@ -104,30 +105,28 @@ let speed = 3;
 let score = 0;
 let gameOver = false;
 let bgY = 0;
-let highScore = localStorage.getItem("highScore") || 0;
 
+let highScore = localStorage.getItem("highScore") || 0;
 highScoreEl.textContent = highScore;
 
-/* 敵生成 */
+function resetEnemy(e) {
+  e.dataset.y = -Math.random() * 700 - 40;
+  e.style.left = Math.random() * 280 + "px";
+  e.style.top = e.dataset.y + "px";
+}
+
 function createEnemy() {
   const e = document.createElement("img");
   e.src = "rock.png";
   e.className = "enemy";
+  e.dataset.speed = Math.random() * 1.5 + 0.8;
   resetEnemy(e);
   game.appendChild(e);
   enemies.push(e);
 }
 
-function resetEnemy(e) {
-  e.dataset.y = -Math.random() * 300 - 40;
-  e.style.left = Math.random() * 280 + "px";
-  e.style.top = e.dataset.y + "px";
-}
-
-/* 初期敵 */
 for (let i = 0; i < 3; i++) createEnemy();
 
-/* プレイヤー移動（※ゲーム中のみ） */
 function movePlayer(x) {
   if (gameOver) return;
 
@@ -140,7 +139,6 @@ function movePlayer(x) {
 game.addEventListener("mousemove", e => movePlayer(e.clientX));
 game.addEventListener("touchmove", e => movePlayer(e.touches[0].clientX));
 
-/* 当たり判定 */
 function hit(a, b) {
   const r1 = a.getBoundingClientRect();
   const r2 = b.getBoundingClientRect();
@@ -152,21 +150,17 @@ function hit(a, b) {
   );
 }
 
-/* ゲームオーバー処理 */
 function endGame() {
   gameOver = true;
 
-  // ハイスコア更新
   if (score > highScore) {
     highScore = score;
     localStorage.setItem("highScore", highScore);
   }
   highScoreEl.textContent = highScore;
-
   overlay.style.display = "flex";
 }
 
-/* メインループ */
 function loop() {
   if (gameOver) return;
 
@@ -175,12 +169,12 @@ function loop() {
 
   enemies.forEach(e => {
     let y = Number(e.dataset.y);
-    y += speed;
+    y += speed * e.dataset.speed;
     e.dataset.y = y;
     e.style.top = y + "px";
 
     if (hit(player, e)) {
-      endGame(); // ← 即停止
+      endGame();
       return;
     }
 
@@ -195,7 +189,6 @@ function loop() {
   requestAnimationFrame(loop);
 }
 
-/* リトライ */
 retryBtn.addEventListener("click", () => {
   score = 0;
   speed = 3;
@@ -205,7 +198,6 @@ retryBtn.addEventListener("click", () => {
 
   enemies.forEach(e => resetEnemy(e));
   overlay.style.display = "none";
-
   loop();
 });
 
