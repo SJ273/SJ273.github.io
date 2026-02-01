@@ -13,12 +13,14 @@ html, body {
 
 body {
   margin: 0;
-  padding: 30px;
+  padding: 0;
   color: #333;
   text-align: center;
 }
 
 h1, h2, h3 {
+  margin: 0;
+  padding: 0;
   color: var(--theme-color);
   border-bottom: dashed 0.1em var(--theme-color);
 }
@@ -125,4 +127,10 @@ th, td {
 img {
   display: block;
   margin: 0 auto;
+}
+
+.nowrap {
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
 }
