@@ -16,7 +16,7 @@
 <body>
     <div class="body">
 <h2>今日のおみくじ</h2>
-<button onclick="omikuji()">おみくじを引く</button>
+<button onclick="omikuji()">おみくじ引く</button>
 
 <p id="date"></p>
 <p id="result"></p>
@@ -28,16 +28,16 @@ const todayStr = today.toDateString();
 const savedDay = localStorage.getItem("omikujiDay");
 const savedResult = localStorage.getItem("omikujiResult");
 
-// ページを開いた時に今日の結果があれば表示
 if (savedDay === todayStr && savedResult) {
   showResult(savedResult);
 }
 
-// おみくじを引く処理
 function omikuji() {
+  const savedDay = localStorage.getItem("omikujiDay");
+
   if (savedDay === todayStr) {
     document.getElementById("comment").textContent =
-      "今日はもう引いてるよ！また明日ね 🌙";
+      "今日はもう引いています。また明日来てください。";
     return;
   }
 
@@ -62,7 +62,6 @@ function omikuji() {
   showResult(result);
 }
 
-// 表示用関数
 function showResult(result) {
   document.getElementById("date").textContent =
     `日付：${today.getFullYear()}年${today.getMonth()+1}月${today.getDate()}日`;
