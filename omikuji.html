@@ -7,6 +7,11 @@
   <title>SJ273のポートフォリオ - おみくじ</title>
 
   <link rel="stylesheet" href="style.css">
+  <style>
+  #text, #notice {
+  white-space: pre-line;
+  }
+  </style>
 </head>
 <body>
   <h1 class="section-title"　data-direction="left">FORTUNE SLIP</h1>
@@ -23,7 +28,7 @@
 <a href="/probability">確率を見る</a>
 <div style="height: 6px;"></div>
 <a href="/">ホームに戻る</a>
-<h1 class="section-title"　data-direction="right">FORTUNE SLIP</h1>
+<h1 class="section-title" data-direction="right">FORTUNE SLIP</h1>
 　<font size="2">2025-2026 SJ273</font>
 　<div style="height: 2em;"></div>
   <script src="marquee.js"></script>
@@ -93,7 +98,7 @@ window.onload = function () {
 function showTodayDate() {
   const now = new Date();
   document.getElementById("date").textContent =
-    `${now.getFullYear()}年${now.getMonth() + 1}月${now.getDate()}日の結果`;
+    `${now.getFullYear()}年${now.getMonth() + 1}月${now.getDate()}日`;
 }
 
 function omikuji() {
