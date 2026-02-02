@@ -4,30 +4,40 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>SJ273のポートフォリオ - 避けるゲーム</title>
-<link rel="stylesheet" href="style.css">
 <style>
 body { text-align: center; background: white; font-family: sans-serif; }
 #game { width: 320px; height: 480px; margin: auto; border: 2px solid black; position: relative; overflow: hidden; touch-action: none; background-image: url("background.png"); background-size: cover; background-position: center; }
-#player { width: 50px; position: absolute; bottom: 10px; left: 135px; pointer-events: none; }
+#player { width: 50px; position: absolute; bottom: 10px; left: 135px; pointer-events: none; transition: left 0.05s linear; }
 .enemy { width: 40px; position: absolute; pointer-events: none; }
 #info { font-size: 18px; margin-top: 10px; }
 #overlay, #startScreen { position: absolute; inset: 0; background: rgba(0,0,0,0.7); display: flex; justify-content: center; align-items: center; z-index: 10; }
-.over-text, #startScreen div { color: white; text-align: center; }
+.over-text, #startScreen div { color: white; text-align: center; display: flex; flex-direction: column; align-items: center; }
 .over-text p, #startScreen p { font-size: 22px; margin-bottom: 10px; }
-button { font-size: 18px; padding: 10px 20px; cursor: pointer; margin: 5px; }
+
+button { font-size: 18px; padding: 10px 20px; cursor: pointer; margin: 5px; border: none; border-radius: 5px; min-width: 80px; }
+button.selected { background: orange; color: white; }
+button:not(.selected) { background: white; color: black; }
+
+.overlay-difficulty, .start-difficulty { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-top: 10px; }
 </style>
 </head>
 <body>
-<h1 class="section-title"　data-direction="left">DODGE GAME</h1>
+<h1 class="section-title">DODGE GAME</h1>
 <div style="height: 1em;"></div>
+
 <div id="game">
   <img id="player" src="pen1_34.gif">
 
   <div id="overlay" style="display:none;">
     <div class="over-text">
       <p>ゲームオーバー</p>
-      <p>あなたのハイスコア: <span id="highScore">0</span></p>
-      <button id="retry">もう一度</button>
+      <p>あなたのハイスコア：<span id="highScore">0</span></p>
+      <p>難易度を選ぶ：</p>
+      <div class="overlay-difficulty">
+        <button class="difficulty" data-key="easy">簡単</button>
+        <button class="difficulty" data-key="normal">普通</button>
+        <button class="difficulty" data-key="hard">難しい</button>
+      </div>
     </div>
   </div>
 
@@ -35,10 +45,12 @@ button { font-size: 18px; padding: 10px 20px; cursor: pointer; margin: 5px; }
     <div>
       <p>避けるゲーム</p>
       <p>左右に動いて岩を避けよう！</p>
-      <p>難易度を選択：</p>
-      <button class="difficulty" data-key="easy">簡単</button>
-      <button class="difficulty" data-key="normal">普通</button>
-      <button class="difficulty" data-key="hard">難しい</button>
+      <p>難易度を選ぶ：</p>
+      <div class="start-difficulty">
+        <button class="difficulty" data-key="easy">簡単</button>
+        <button class="difficulty" data-key="normal">普通</button>
+        <button class="difficulty" data-key="hard">難しい</button>
+      </div>
     </div>
   </div>
 </div>
@@ -48,19 +60,17 @@ button { font-size: 18px; padding: 10px 20px; cursor: pointer; margin: 5px; }
 </div>
 <div style="height: 2em;"></div>
 <a href="/">ホームに戻る</a>
-<h1 class="section-title" data-direction="right">DODGE GAME</h1>
-　<font size="2">2025-2026 SJ273</font>
-　<div style="height: 2em;"></div>
-  <script src="marquee.js"></script>
+<h1 class="section-title">DODGE GAME</h1>
+<font size="2">2025-2026 SJ273</font>
+<div style="height: 2em;"></div>
+<script src="marquee.js"></script>
 <script>
 const game = document.getElementById("game");
 const player = document.getElementById("player");
 const scoreEl = document.getElementById("score");
 const overlay = document.getElementById("overlay");
-const retryBtn = document.getElementById("retry");
 const highScoreEl = document.getElementById("highScore");
 const startScreen = document.getElementById("startScreen");
-const difficultyButtons = document.querySelectorAll(".difficulty");
 
 let enemies = [];
 let speed = 3;
@@ -140,6 +150,7 @@ function endGame() {
   }
   highScoreEl.textContent = highScore;
   overlay.style.display = "flex";
+  updateDifficultyButtons();
 }
 
 function loop() {
@@ -150,7 +161,7 @@ function loop() {
   const maxStep = 10;
   if(dx > maxStep) dx = maxStep;
   if(dx < -maxStep) dx = -maxStep;
-  px += dx * 0.2;
+  px += dx * 0.35;
   const rect = game.getBoundingClientRect();
   px = Math.max(0, Math.min(rect.width - player.offsetWidth, px));
   player.style.left = px + "px";
@@ -182,32 +193,7 @@ function loop() {
   requestAnimationFrame(loop);
 }
 
-difficultyButtons.forEach(btn => {
-  btn.addEventListener("click", () => {
-    currentDifficulty = btn.dataset.key;
-    const set = difficultySettings[currentDifficulty];
-    speed = set.speed;
-
-    enemies.forEach(e => e.remove());
-    enemies = [];
-    for (let i = 0; i < set.enemies; i++) createEnemy();
-
-    highScore = loadHighScore();
-    highScoreEl.textContent = highScore;
-
-    startScreen.style.display = "none";
-    gameStarted = true;
-    loop();
-  });
-});
-
-retryBtn.addEventListener("click", () => {
-  score = 0;
-  bgY = 0;
-  gameOver = false;
-  scoreEl.textContent = score;
-  player.src = "pen1_34.gif";
-
+function startGame() {
   const set = difficultySettings[currentDifficulty];
   speed = set.speed;
 
@@ -215,10 +201,47 @@ retryBtn.addEventListener("click", () => {
   enemies = [];
   for (let i = 0; i < set.enemies; i++) createEnemy();
 
+  highScore = loadHighScore();
+  highScoreEl.textContent = highScore;
+
+  startScreen.style.display = "none";
   overlay.style.display = "none";
+  score = 0;
+  scoreEl.textContent = score;
+  bgY = 0;
+  gameOver = false;
+  player.src = "pen1_34.gif";
+  gameStarted = true;
   loop();
+}
+
+const allDifficultyButtons = document.querySelectorAll(".difficulty");
+
+function updateDifficultyButtons() {
+  allDifficultyButtons.forEach(btn => {
+    if(btn.dataset.key === currentDifficulty) {
+      btn.classList.add("selected");
+    } else {
+      btn.classList.remove("selected");
+    }
+  });
+}
+
+startScreen.querySelectorAll(".difficulty").forEach(btn => {
+  btn.addEventListener("click", () => {
+    currentDifficulty = btn.dataset.key;
+    updateDifficultyButtons();
+    startGame();
+  });
+});
+
+overlay.querySelectorAll(".difficulty").forEach(btn => {
+  btn.addEventListener("click", () => {
+    currentDifficulty = btn.dataset.key;
+    updateDifficultyButtons();
+    startGame();
+  });
 });
 </script>
-
 </body>
 </html>
