@@ -162,7 +162,7 @@ function loop() {
   const maxStep = 10;
   if(dx > maxStep) dx = maxStep;
   if(dx < -maxStep) dx = -maxStep;
-  px += dx * 0.6;
+  px += dx * 0.8;
   const rect = game.getBoundingClientRect();
   px = Math.max(0, Math.min(rect.width - player.offsetWidth, px));
   player.style.left = px + "px";
@@ -195,6 +195,8 @@ function loop() {
 }
 
 function startGame() {
+  player.style.left = targetX + "px";
+  
   const set = difficultySettings[currentDifficulty];
   speed = set.speed;
 
