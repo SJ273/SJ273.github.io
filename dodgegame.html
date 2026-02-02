@@ -29,10 +29,11 @@ button:not(.selected) { background: white; color: black; }
 .overlay-difficulty,
 .start-difficulty {
   display: flex;
-  flex-direction: row;
-  gap: 8px;
+  flex-direction: column;
+  gap: 10px;
   justify-content: center;
-  flex-wrap: nowrap;
+  align-items: center;
+  margin-top: 10px;
 }
 </style>
 </head>
@@ -103,7 +104,7 @@ const difficultySettings = {
   easy:   { speed: 2, enemies: 2, speedMin: 0.6, speedMax: 1.0, accel: 0.02 },
   normal: { speed: 3, enemies: 3, speedMin: 0.8, speedMax: 1.5, accel: 0.05 },
   hard:   { speed: 3.5, enemies: 4, speedMin: 1.0, speedMax: 1.6, accel: 0.05 },
-  impossible:   { speed: 10, enemies: 10, speedMin: 2.0, speedMax: 6.0, accel: 1.0 }
+  impossible:   { speed: 2.5, enemies: 30, speedMin: 1.0, speedMax: 1.0, accel: 1.0 }
 };
 
 function loadHighScore() {
