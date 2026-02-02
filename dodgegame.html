@@ -52,7 +52,7 @@ button:not(.selected) { background: white; color: black; }
   <div id="overlay" style="display:none;">
     <div class="over-text">
       <p>ゲームオーバー</p>
-      <p>あなたのハイスコア：<span id="highScoreText">0</span></p>
+      <p><span id="highScore">0</span></p>
       <p>難易度を選ぶ：</p>
       <div class="overlay-difficulty">
         <div>
@@ -71,7 +71,7 @@ button:not(.selected) { background: white; color: black; }
         <button class="difficulty" data-key="impossible">絶対無理</button>
         <span class="currentDifficultyLabel">↑今コレ</span>
         </div>
-    </div>
+      </div>
   </div>
 </div>
 
@@ -88,7 +88,6 @@ button:not(.selected) { background: white; color: black; }
       </div>
     </div>
   </div>
-</div>
 
 <div id="info">
   スコア: <span id="score">0</span>
@@ -271,7 +270,7 @@ function updateDifficultyButtons() {
     }
   });
   highScore = loadHighScore();
-  document.getElementById("highScoreText").textContent =
+  document.getElementById("highScore").textContent =
     `あなたのハイスコア（${currentDifficulty}）：${highScore}`;
 }
 
