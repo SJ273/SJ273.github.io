@@ -35,6 +35,11 @@ button:not(.selected) { background: white; color: black; }
   align-items: center;
   margin-top: 10px;
 }
+.currentDifficultyLabel {
+  font-size: 14px;
+  color: orange;
+  display: none;
+}
 </style>
 </head>
 <body>
@@ -50,13 +55,26 @@ button:not(.selected) { background: white; color: black; }
       <p>あなたのハイスコア：<span id="highScore">0</span></p>
       <p>難易度を選ぶ：</p>
       <div class="overlay-difficulty">
+        <div>
         <button class="difficulty" data-key="easy">簡単</button>
+        <span class="currentDifficultyLabel">↑今コレ</span>
+        </div>
+        <div>
         <button class="difficulty" data-key="normal">普通</button>
+        <span class="currentDifficultyLabel">↑今コレ</span>
+        </div>
+        <div>
         <button class="difficulty" data-key="hard">難しい</button>
+        <span class="currentDifficultyLabel">↑今コレ</span>
+        </div>
+        <div>
         <button class="difficulty" data-key="impossible">絶対無理</button>
+        <span class="currentDifficultyLabel">↑今コレ</span>
+        </div>
       </div>
     </div>
   </div>
+</div>
 
   <div id="startScreen">
     <div>
@@ -105,7 +123,7 @@ const difficultySettings = {
   easy:   { speed: 2, enemies: 2, speedMin: 0.6, speedMax: 1.0, accel: 0.02, maxEnemies: 6 },
   normal: { speed: 3, enemies: 3, speedMin: 0.8, speedMax: 1.5, accel: 0.05, maxEnemies: 7 },
   hard:   { speed: 3.5, enemies: 4, speedMin: 1.0, speedMax: 1.6, accel: 0.05, maxEnemies: 8 },
-  impossible:   { speed: 6, enemies: 20, speedMin: 6.0, speedMax: 6.0, accel: 0, maxEnemies: 20 }
+  impossible:   { speed: 6, enemies: 50, speedMin: 4.0, speedMax: 4.0, accel: 0.2, maxEnemies: 50 }
 };
 
 function loadHighScore() {
@@ -242,12 +260,19 @@ const allDifficultyButtons = document.querySelectorAll(".difficulty");
 
 function updateDifficultyButtons() {
   allDifficultyButtons.forEach(btn => {
-    if(btn.dataset.key === currentDifficulty) {
+    const label = btn.nextElementSibling;
+
+    if (btn.dataset.key === currentDifficulty) {
       btn.classList.add("selected");
+      if (label) label.style.display = "block";
     } else {
       btn.classList.remove("selected");
+      if (label) label.style.display = "none";
     }
   });
+  highScore = loadHighScore();
+  document.getElementById("highScoreText").textContent =
+    `あなたのハイスコア（${currentDifficulty}）：${highScore}`;
 }
 
 startScreen.querySelectorAll(".difficulty").forEach(btn => {
