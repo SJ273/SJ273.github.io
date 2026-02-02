@@ -1,21 +1,20 @@
-document.querySelectorAll('.section-title').forEach(title => {
-  const text = title.textContent.trim();
-  const direction = title.dataset.direction || "left";
+window.addEventListener('load', () => {
+  document.querySelectorAll('.section-title').forEach(title => {
+    const text = title.textContent.trim();
+    const direction = title.dataset.direction || "left";
 
-  const wrap = document.createElement('div');
-  wrap.className = 'marquee-wrap';
+    const wrap = document.createElement('div');
+    wrap.className = 'marquee-wrap';
 
-  const marquee = document.createElement('div');
-  marquee.className = 'marquee';
-  marquee.innerHTML = `<span>— ${text} — </span><span>— ${text} — </span>`;
+    const marquee = document.createElement('div');
+    marquee.className = 'marquee';
+    marquee.innerHTML = `<span>— ${text} — </span><span>— ${text} — </span>`;
 
-  wrap.appendChild(marquee);
-  title.before(wrap);
+    wrap.appendChild(marquee);
+    title.before(wrap);
 
-  requestAnimationFrame(() => {
     const containerWidth = wrap.offsetWidth;
     let iteration = 0;
-
     while (marquee.scrollWidth < containerWidth * 5 && iteration < 20) {
       marquee.innerHTML += marquee.innerHTML;
       iteration++;
@@ -30,4 +29,3 @@ document.querySelectorAll('.section-title').forEach(title => {
     marquee.style.animationIterationCount = 'infinite';
   });
 });
-
