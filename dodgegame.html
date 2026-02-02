@@ -99,14 +99,13 @@ let gameOver = false;
 let bgY = 0;
 let gameStarted = false;
 let targetX = 135;
-let maxEnemies = 8;
 let currentDifficulty = "normal";
 
 const difficultySettings = {
-  easy:   { speed: 2, enemies: 2, speedMin: 0.6, speedMax: 1.0, accel: 0.02 },
-  normal: { speed: 3, enemies: 3, speedMin: 0.8, speedMax: 1.5, accel: 0.05 },
-  hard:   { speed: 3.5, enemies: 4, speedMin: 1.0, speedMax: 1.6, accel: 0.05 },
-  impossible:   { speed: 6, enemies: 50, speedMin: 6.0, speedMax: 6.0, accel: 0 }
+  easy:   { speed: 2, enemies: 2, speedMin: 0.6, speedMax: 1.0, accel: 0.02, maxEnemies: 6 },
+  normal: { speed: 3, enemies: 3, speedMin: 0.8, speedMax: 1.5, accel: 0.05, maxEnemies: 7 },
+  hard:   { speed: 3.5, enemies: 4, speedMin: 1.0, speedMax: 1.6, accel: 0.05, maxEnemies: 8 },
+  impossible:   { speed: 6, enemies: 20, speedMin: 6.0, speedMax: 6.0, accel: 0, maxEnemies: 20 }
 };
 
 function loadHighScore() {
@@ -219,6 +218,7 @@ function startGame() {
   
   const set = difficultySettings[currentDifficulty];
   speed = set.speed;
+  maxEnemies = set.maxEnemies;
 
   enemies.forEach(e => e.remove());
   enemies = [];
