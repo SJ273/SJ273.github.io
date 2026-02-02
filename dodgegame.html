@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>SJ273のポートフォリオ - 避けるゲーム</title>
+<link rel="stylesheet" href="style.css">
 <style>
   body {
     text-align: center;
@@ -71,9 +72,8 @@
 </style>
 </head>
 <body>
-
-<h2>避けるゲーム</h2>
-
+  <h1 class="section-title"　data-direction="left">DODGE GAME</h1>
+　<div style="height: 2em;"></div>
 <div id="game">
   <img id="player" src="pen1_34.gif">
 
@@ -89,7 +89,12 @@
 <div id="info">
   スコア: <span id="score">0</span>
 </div>
-
+<div style="height: 2em;"></div>
+<a href="/">ホームに戻る</a>
+<h1 class="section-title" data-direction="right">DODGE GAME</h1>
+　<font size="2">2025-2026 SJ273</font>
+　<div style="height: 2em;"></div>
+  <script src="marquee.js"></script>
 <script>
 
 const game = document.getElementById("game");
@@ -166,7 +171,7 @@ function hit(a, b) {
 function endGame() {
   gameOver = true;
 
-  player.src = "pen_12.gif";
+  player.src = "pen1_12.gif";
 
   gameOverSound.play();
 
