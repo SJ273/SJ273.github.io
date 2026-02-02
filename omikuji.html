@@ -1,40 +1,35 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>SJ273のポートフォリオ - おみくじ</title>
-  <style>
-    body {
-      text-align: center;
-      font-family: sans-serif;
-    }
-    #text {
-       white-space: pre-line;
-    }
-    #notice {
-       white-space: pre-line;
-    }
-  </style>
+
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-
-<h1>今日のおみくじ</h1>
+  <h1 class="section-title"　data-direction="left">FORTUNE SLIP</h1>
 <p id="date"></p>
+  <div style="height: 6px;"></div>
 <button id="btn" onclick="omikuji()">おみくじを引く</button>
-
-<h1><p id="result"></p></h1>
+<div style="height: 6px;"></div>
+<font size="6"><span style="font-weight: bold;"><p id="result"></p></font></span><br>
 <p id="comment"></p>
-
-<p id="notice"></p>
+<div style="height: 2em;"></div>
+<p id="notice"></p><br>
 <p id="message"></p>
-
+<div style="height: 2em;"></div>
 <img id="randomImage" src="">
 <p id="text"></p>
-
-<p><a href="/probability">確率を見る</a></p>
-<p><a href="/">ホームに戻る</a></p>
-
+<div style="height: 2em;"></div>
+<a href="/probability">確率を見る</a>
+<div style="height: 6px;"></div>
+<a href="/">ホームに戻る</a>
+<h1 class="section-title"　data-direction="left">FORTUNE SLIP</h1>
+　<font size="2">2025-2026 SJ273</font>
+　<div style="height: 2em;"></div>
+  <script src="marquee.js"></script>
 <script>
 const words = [
   "今日は何が出るかな？",
