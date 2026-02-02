@@ -90,6 +90,17 @@ th, td {
   text-align: center;
 }
 
+img {
+  display: block;
+  margin: 0 auto;
+}
+
+.nowrap {
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+}
+
 .marquee-wrap {
   width: 100%;
   overflow: hidden;
@@ -102,7 +113,6 @@ th, td {
 .marquee {
   display: flex;
   width: max-content;
-  animation: marquee linear infinite;
 }
 
 .marquee span {
@@ -113,24 +123,18 @@ th, td {
   font-family: monospace;
 }
 
-@keyframes marquee {
+@keyframes marquee-left {
   from { transform: translateX(0); }
-  to   { transform: translateX(var(--move-distance)); }
+  to   { transform: translateX(calc(-1 * var(--move-distance))); }
+}
+
+@keyframes marquee-right {
+  from { transform: translateX(calc(-1 * var(--move-distance))); }
+  to   { transform: translateX(0); }
 }
 
 @media (max-width: 600px) {
   .marquee span {
     font-size: 11px;
   }
-}
-
-img {
-  display: block;
-  margin: 0 auto;
-}
-
-.nowrap {
-  white-space: nowrap;
-  display: inline-flex;
-  align-items: center;
 }
