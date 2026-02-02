@@ -230,8 +230,8 @@ function loop(t) {
       score++;
       scoreEl.textContent = score;
 
-      if (score % 100 === 0) scoreSE.play();
-      if (score === 200) game.classList.add("night");
+      if (score % 10 === 0) scoreSE.play();
+      //if (score === 200) game.classList.add("night");
 
       speed += 10;
       return false;
@@ -307,6 +307,7 @@ document.getElementById("retryBtn").onclick = startGame;
 
 </body>
 </html>
+
 
 
 
