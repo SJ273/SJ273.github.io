@@ -15,11 +15,25 @@ body { text-align: center; background: white; font-family: sans-serif; }
 .over-text, #startScreen div { color: white; text-align: center; display: flex; flex-direction: column; align-items: center; }
 .over-text p, #startScreen p { font-size: 22px; margin-bottom: 10px; }
 
-button { font-size: 18px; padding: 10px 20px; cursor: pointer; margin: 5px; border: none; border-radius: 5px; min-width: 80px; }
+button {
+  font-size: 16px;      
+  padding: 8px 16px;     
+  border-radius: 5px;
+  min-width: auto;       
+  flex: 1 1 auto;         
+  text-align: center;
+}
 button.selected { background: orange; color: white; }
 button:not(.selected) { background: white; color: black; }
 
-.overlay-difficulty, .start-difficulty { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-top: 10px; }
+.overlay-difficulty,
+.start-difficulty {
+  display: flex;
+  flex-direction: row;
+  gap: 8px;
+  justify-content: center;
+  flex-wrap: nowrap;
+}
 </style>
 </head>
 <body>
@@ -38,6 +52,7 @@ button:not(.selected) { background: white; color: black; }
         <button class="difficulty" data-key="easy">簡単</button>
         <button class="difficulty" data-key="normal">普通</button>
         <button class="difficulty" data-key="hard">難しい</button>
+        <button class="difficulty" data-key="impossible">絶対無理</button>
       </div>
     </div>
   </div>
@@ -51,6 +66,7 @@ button:not(.selected) { background: white; color: black; }
         <button class="difficulty" data-key="easy">簡単</button>
         <button class="difficulty" data-key="normal">普通</button>
         <button class="difficulty" data-key="hard">難しい</button>
+        <button class="difficulty" data-key="impossible">絶対無理</button>
       </div>
     </div>
   </div>
@@ -86,7 +102,8 @@ let currentDifficulty = "normal";
 const difficultySettings = {
   easy:   { speed: 2, enemies: 2, speedMin: 0.6, speedMax: 1.0, accel: 0.02 },
   normal: { speed: 3, enemies: 3, speedMin: 0.8, speedMax: 1.5, accel: 0.05 },
-  hard:   { speed: 4, enemies: 4, speedMin: 1.2, speedMax: 2.0, accel: 0.07 }
+  hard:   { speed: 3.5, enemies: 4, speedMin: 1.0, speedMax: 1.6, accel: 0.05 },
+  impossible:   { speed: 10, enemies: 10, speedMin: 2.0, speedMax: 6.0, accel: 1.0 }
 };
 
 function loadHighScore() {
