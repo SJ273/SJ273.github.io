@@ -52,7 +52,7 @@ button:not(.selected) { background: white; color: black; }
   <div id="overlay" style="display:none;">
     <div class="over-text">
       <p>ゲームオーバー</p>
-      <p>あなたのハイスコア：<span id="highScore">0</span></p>
+      <p>あなたのハイスコア：<span id="highScoreText">0</span></p>
       <p>難易度を選ぶ：</p>
       <div class="overlay-difficulty">
         <div>
@@ -71,7 +71,6 @@ button:not(.selected) { background: white; color: black; }
         <button class="difficulty" data-key="impossible">絶対無理</button>
         <span class="currentDifficultyLabel">↑今コレ</span>
         </div>
-      </div>
     </div>
   </div>
 </div>
@@ -118,6 +117,7 @@ let bgY = 0;
 let gameStarted = false;
 let targetX = 135;
 let currentDifficulty = "normal";
+let maxEnemies = 0;
 
 const difficultySettings = {
   easy:   { speed: 2, enemies: 2, speedMin: 0.6, speedMax: 1.0, accel: 0.02, maxEnemies: 6 },
