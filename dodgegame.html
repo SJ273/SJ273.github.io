@@ -18,8 +18,8 @@ button { font-size: 18px; padding: 10px 20px; cursor: pointer; margin: 5px; }
 </style>
 </head>
 <body>
-  <h1 class="section-title"　data-direction="left">DODGE GAME</h1>
-　<div style="height: 1em;"></div>
+<h1 class="section-title"　data-direction="left">DODGE GAME</h1>
+<div style="height: 1em;"></div>
 <div id="game">
   <img id="player" src="pen1_34.gif">
 
@@ -36,9 +36,9 @@ button { font-size: 18px; padding: 10px 20px; cursor: pointer; margin: 5px; }
       <p>避けるゲーム</p>
       <p>左右に動いて岩を避けよう！</p>
       <p>難易度を選択：</p>
-      <button class="difficulty" data-speed="2" data-enemies="2" data-key="easy">簡単</button>
-      <button class="difficulty" data-speed="3" data-enemies="3" data-key="normal">普通</button>
-      <button class="difficulty" data-speed="4" data-enemies="4" data-key="hard">難しい</button>
+      <button class="difficulty" data-key="easy">簡単</button>
+      <button class="difficulty" data-key="normal">普通</button>
+      <button class="difficulty" data-key="hard">難しい</button>
     </div>
   </div>
 </div>
@@ -52,7 +52,6 @@ button { font-size: 18px; padding: 10px 20px; cursor: pointer; margin: 5px; }
 　<font size="2">2025-2026 SJ273</font>
 　<div style="height: 2em;"></div>
   <script src="marquee.js"></script>
-
 <script>
 const game = document.getElementById("game");
 const player = document.getElementById("player");
@@ -73,6 +72,12 @@ let targetX = 135;
 let maxEnemies = 8;
 let currentDifficulty = "normal";
 
+const difficultySettings = {
+  easy:   { speed: 2, enemies: 2, speedMin: 0.6, speedMax: 1.0, accel: 0.02 },
+  normal: { speed: 3, enemies: 3, speedMin: 0.8, speedMax: 1.5, accel: 0.05 },
+  hard:   { speed: 4, enemies: 4, speedMin: 1.2, speedMax: 2.0, accel: 0.07 }
+};
+
 function loadHighScore() {
   let hs = localStorage.getItem("highScore_" + currentDifficulty);
   return hs ? Number(hs) : 0;
@@ -81,9 +86,7 @@ function loadHighScore() {
 let highScore = loadHighScore();
 highScoreEl.textContent = highScore;
 
-function playSound(src) {
-  new Audio(src).play();
-}
+function playSound(src) { new Audio(src).play(); }
 
 function resetEnemy(e) {
   e.dataset.y = -Math.random() * 700 - 40;
@@ -97,14 +100,8 @@ function createEnemy() {
   e.src = "rock.png";
   e.className = "enemy";
 
-  let speedMin, speedMax;
-  switch(currentDifficulty) {
-    case "easy":   speedMin = 0.5; speedMax = 1.2; break;
-    case "normal": speedMin = 0.8; speedMax = 1.5; break;
-    case "hard":   speedMin = 1.2; speedMax = 2.0; break;
-  }
-
-  e.dataset.speed = Math.random() * (speedMax - speedMin) + speedMin;
+  const set = difficultySettings[currentDifficulty];
+  e.dataset.speed = Math.random() * (set.speedMax - set.speedMin) + set.speedMin;
 
   resetEnemy(e);
   game.appendChild(e);
@@ -149,7 +146,11 @@ function loop() {
   if (gameOver || !gameStarted) return;
 
   let px = parseFloat(player.style.left) || 0;
-  px += (targetX - px) * 0.2;
+  let dx = targetX - px;
+  const maxStep = 10;
+  if(dx > maxStep) dx = maxStep;
+  if(dx < -maxStep) dx = -maxStep;
+  px += dx * 0.2;
   const rect = game.getBoundingClientRect();
   px = Math.max(0, Math.min(rect.width - player.offsetWidth, px));
   player.style.left = px + "px";
@@ -157,16 +158,15 @@ function loop() {
   bgY += speed / 2;
   game.style.backgroundPosition = `0px ${bgY}px`;
 
+  const set = difficultySettings[currentDifficulty];
+
   enemies.forEach(e => {
     let y = Number(e.dataset.y);
     y += speed * e.dataset.speed;
     e.dataset.y = y;
     e.style.top = y + "px";
 
-    if (hit(player, e)) {
-      endGame();
-      return;
-    }
+    if (hit(player, e)) { endGame(); return; }
 
     if (y > 480) {
       resetEnemy(e);
@@ -175,7 +175,7 @@ function loop() {
       playSound("決定ボタンを押す40.mp3");
 
       if (score % 5 === 0) createEnemy();
-      if (score % 5 === 0) speed += 0.5;
+      speed += set.accel;
     }
   });
 
@@ -184,13 +184,13 @@ function loop() {
 
 difficultyButtons.forEach(btn => {
   btn.addEventListener("click", () => {
-    speed = Number(btn.dataset.speed);
-    const initialEnemies = Number(btn.dataset.enemies);
     currentDifficulty = btn.dataset.key;
+    const set = difficultySettings[currentDifficulty];
+    speed = set.speed;
 
     enemies.forEach(e => e.remove());
     enemies = [];
-    for (let i = 0; i < initialEnemies; i++) createEnemy();
+    for (let i = 0; i < set.enemies; i++) createEnemy();
 
     highScore = loadHighScore();
     highScoreEl.textContent = highScore;
@@ -203,12 +203,18 @@ difficultyButtons.forEach(btn => {
 
 retryBtn.addEventListener("click", () => {
   score = 0;
-  speed = 3;
   bgY = 0;
   gameOver = false;
   scoreEl.textContent = score;
   player.src = "pen1_34.gif";
-  enemies.forEach(e => resetEnemy(e));
+
+  const set = difficultySettings[currentDifficulty];
+  speed = set.speed;
+
+  enemies.forEach(e => e.remove());
+  enemies = [];
+  for (let i = 0; i < set.enemies; i++) createEnemy();
+
   overlay.style.display = "none";
   loop();
 });
