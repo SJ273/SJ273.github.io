@@ -28,7 +28,7 @@ html, body {
 #game {
   width: 100%;
   max-width: 700px;
-  aspect-ratio: 7 / 2;
+  height: 200px;
   background: #fff;
   border: 2px solid #000;
   position: relative;
@@ -115,8 +115,11 @@ button {
 </head>
 <body>
 <h1 class="section-title" data-direction="left">DINOSOUR GAME</h1>
-スマホでも遊べます。音が流れるので音量注意。
-<div style="height: 2em;"></div>
+<div style="height: 1em;"></div>
+スペースキー、マウスクリック、タップのどれかでジャンプします。
+<div style="height: 6px;"></div>
+音が流れるので音量注意。
+<div style="height: 1em;"></div>
 <div id="container">
   <div id="game">
     <div id="ground"></div>
@@ -137,13 +140,11 @@ button {
   </div>
 </div>
 <div style="height: 2em;"></div>
-スペースキー、マウスクリック、タップのどれかでジャンプします。
-<div style="height: 1em;"></div>
 Chromeの恐竜が走るゲームを再現してみた。名前が「恐竜ゲーム」なのはそういうこと。
 <div style="height: 6px;"></div>
 まあ走ってるのペンギンだけども。
 <div style="height: 6px;"></div>
-サボテンとか鳥の絵がめっちゃ雑なのは気にするな。
+あとサボテンとか鳥の絵がめっちゃ雑なのは気にするな。
 <div style="height: 2em;"></div>
 <a href="/">ホームに戻る</a>
 <h1 class="section-title" data-direction="right">DINOSOUR GAME</h1>
@@ -170,6 +171,7 @@ const jumpPower = 900;
 let groundX = 0;
 let speed = 300;
 let score = 0;
+scoreEl.textContent = "スコア：" + score;
 let hiScore = localStorage.getItem("hi") || 0;
 hiEl.textContent = "ハイスコア：" + hiScore;
 
@@ -228,7 +230,7 @@ function loop(t) {
     if (o.offsetLeft < -60) {
       o.remove();
       score++;
-      scoreEl.textContent = score;
+      scoreEl.textContent = "スコア：" + score;
 
       if (score % 10 === 0) scoreSE.play();
       //if (score === 200) game.classList.add("night");
@@ -276,7 +278,7 @@ function startGame() {
   y = vy = 0;
   speed = 300;
   score = 0;
-  scoreEl.textContent = 0;
+  scoreEl.textContent = "スコア：" + score;
   lastTime = null;
   playing = true;
 
@@ -307,6 +309,7 @@ document.getElementById("retryBtn").onclick = startGame;
 
 </body>
 </html>
+
 
 
 
