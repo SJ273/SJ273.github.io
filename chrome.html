@@ -164,6 +164,19 @@ const jumpSE = new Audio("ニュッ2.mp3");
 const overSE = new Audio("しょげる.mp3");
 const scoreSE = new Audio("決定ボタンを押す17.mp3");
 
+const preloadImages = [
+  "pen1_80.gif",
+  "pen1_12.gif",
+  "サボテン.png",
+  "鳥.png",
+  "地面.png"
+];
+
+preloadImages.forEach(src => {
+  const img = new Image();
+  img.src = src;
+});
+
 let y = 0, vy = 0;
 const gravity = -2200;
 const jumpPower = 900;
@@ -314,4 +327,5 @@ document.getElementById("retryBtn").onclick = startGame;
 
 </body>
 </html>
+
 
