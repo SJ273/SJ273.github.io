@@ -161,7 +161,7 @@ const title = document.getElementById("title");
 const gameover = document.getElementById("gameover");
 
 const jumpSE = new Audio("ニュッ2.mp3");
-const overSE = new Audio("打撃4.mp3");
+const overSE = new Audio("しょげる.mp3");
 const scoreSE = new Audio("決定ボタンを押す17.mp3");
 
 let y = 0, vy = 0;
@@ -208,16 +208,19 @@ function spawnObstacle() {
 }
 
 function loop(t) {
-  if (!playing) return;
   if (!lastTime) lastTime = t;
   const dt = (t - lastTime) / 1000;
   lastTime = t;
 
   vy += gravity * dt;
   y += vy * dt;
-  if (y < 0) { y = 0; vy = 0; }
+  if (playing) {
+    if (y < 0) { y = 0; vy = 0; }
+  }
   dino.style.bottom = (y + 16) + "px";
 
+  if (!playing && y <= -100) return;
+  if (playing) {
   groundX -= speed * dt;
   ground.style.transform = `translateX(${groundX % 40}px)`;
 
@@ -246,7 +249,7 @@ function loop(t) {
     spawnObstacle();
     spawnTimer = 0;
   }
-
+  }
   requestAnimationFrame(loop);
 }
 
@@ -294,8 +297,10 @@ function endGame() {
   overSE.play();
 
   dino.style.backgroundImage =
-    'url("pen1_12.gif")';
+    'url("pen1_41.gif")';
 
+  vy = 600;
+  
   if (score > hiScore) {
     hiScore = score;
     localStorage.setItem("hi", hiScore);
@@ -309,9 +314,3 @@ document.getElementById("retryBtn").onclick = startGame;
 
 </body>
 </html>
-
-
-
-
-
-
