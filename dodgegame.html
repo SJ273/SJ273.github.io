@@ -101,8 +101,6 @@ button:not(.selected) { background: white; color: black; }
 <div style="height: 2em;"></div>
 「絶対無理」はネタです。
 <div style="height: 6px;"></div>
-たまに何点か取れるかもしれないけどすぐ死にます。
-<div style="height: 6px;"></div>
 クレームはお控えください。
 <div style="height: 2em;"></div>
 <a href="/">ホームに戻る</a>
@@ -128,11 +126,18 @@ let targetX = 135;
 let currentDifficulty = "normal";
 let maxEnemies = 0;
 
+const difficultyNames = {
+  easy: "簡単",
+  normal: "普通",
+  hard: "難しい",
+  impossible: "絶対無理"
+};
+
 const difficultySettings = {
   easy:   { speed: 2, enemies: 2, speedMin: 0.6, speedMax: 1.0, accel: 0.02, maxEnemies: 6 },
   normal: { speed: 3, enemies: 3, speedMin: 0.8, speedMax: 1.5, accel: 0.05, maxEnemies: 7 },
   hard:   { speed: 3.5, enemies: 4, speedMin: 1.0, speedMax: 1.6, accel: 0.05, maxEnemies: 8 },
-  impossible:   { speed: 4, enemies: 200, speedMin: 3.0, speedMax: 3.0, accel: 2.0, maxEnemies: 200 }
+  impossible: { speed: 3, enemies: 8, speedMin: 3, speedMax: 3, accel: 0, maxEnemies: 8 } // 横一列方式
 };
 
 function loadHighScore() {
@@ -165,6 +170,24 @@ function createEnemy() {
   enemies.push(e);
 }
 
+function createImpossibleLine() {
+  enemies.forEach(e => e.remove());
+  enemies = [];
+  const rockWidth = 40;
+  const cols = Math.floor(game.offsetWidth / rockWidth);
+  for (let i = 0; i < cols; i++) {
+    const e = document.createElement("img");
+    e.src = "rock.png";
+    e.className = "enemy";
+    e.dataset.speed = 3;
+    e.dataset.y = -50;
+    e.style.left = i * rockWidth + "px";
+    e.style.top = e.dataset.y + "px";
+    game.appendChild(e);
+    enemies.push(e);
+  }
+}
+
 game.addEventListener("mousemove", e => {
   const rect = game.getBoundingClientRect();
   targetX = e.clientX - rect.left - player.offsetWidth / 2;
@@ -195,7 +218,9 @@ function endGame() {
     highScore = score;
     localStorage.setItem("highScore_" + currentDifficulty, highScore);
   }
-  highScoreEl.textContent = highScore;
+
+  highScoreEl.textContent = `あなたのハイスコア（${difficultyNames[currentDifficulty]}）：${highScore}`;
+
   overlay.style.display = "flex";
   updateDifficultyButtons();
 }
@@ -219,21 +244,28 @@ function loop() {
   const set = difficultySettings[currentDifficulty];
 
   enemies.forEach(e => {
-    let y = Number(e.dataset.y);
-    y += speed * e.dataset.speed;
-    e.dataset.y = y;
-    e.style.top = y + "px";
+    if (currentDifficulty === "impossible") {
+      e.dataset.y = Number(e.dataset.y) + speed;
+      e.style.top = e.dataset.y + "px";
+      if (hit(player, e)) { endGame(); return; }
+      if (e.dataset.y > 480) e.dataset.y = -50;
+    } else {
+      let y = Number(e.dataset.y);
+      y += speed * e.dataset.speed;
+      e.dataset.y = y;
+      e.style.top = y + "px";
 
-    if (hit(player, e)) { endGame(); return; }
+      if (hit(player, e)) { endGame(); return; }
 
-    if (y > 480) {
-      resetEnemy(e);
-      score++;
-      scoreEl.textContent = score;
-      playSound("決定ボタンを押す40.mp3");
+      if (y > 480) {
+        resetEnemy(e);
+        score++;
+        scoreEl.textContent = score;
+        playSound("決定ボタンを押す40.mp3");
 
-      if (score % 5 === 0) createEnemy();
-      speed += set.accel;
+        if (score % 5 === 0) createEnemy();
+        speed += set.accel;
+      }
     }
   });
 
@@ -242,17 +274,21 @@ function loop() {
 
 function startGame() {
   player.style.left = targetX + "px";
-  
   const set = difficultySettings[currentDifficulty];
   speed = set.speed;
   maxEnemies = set.maxEnemies;
 
   enemies.forEach(e => e.remove());
   enemies = [];
-  for (let i = 0; i < set.enemies; i++) createEnemy();
+
+  if (currentDifficulty === "impossible") {
+    createImpossibleLine();
+  } else {
+    for (let i = 0; i < set.enemies; i++) createEnemy();
+  }
 
   highScore = loadHighScore();
-  highScoreEl.textContent = highScore;
+  highScoreEl.textContent = `あなたのハイスコア（${difficultyNames[currentDifficulty]}）：${highScore}`;
 
   startScreen.style.display = "none";
   overlay.style.display = "none";
@@ -270,7 +306,6 @@ const allDifficultyButtons = document.querySelectorAll(".difficulty");
 function updateDifficultyButtons() {
   allDifficultyButtons.forEach(btn => {
     const label = btn.nextElementSibling;
-
     if (btn.dataset.key === currentDifficulty) {
       btn.classList.add("selected");
       if (label) label.style.display = "block";
@@ -280,8 +315,7 @@ function updateDifficultyButtons() {
     }
   });
   highScore = loadHighScore();
-  document.getElementById("highScore").textContent =
-    `あなたのハイスコア（${currentDifficulty}）：${highScore}`;
+  highScoreEl.textContent = `あなたのハイスコア（${difficultyNames[currentDifficulty]}）：${highScore}`;
 }
 
 startScreen.querySelectorAll(".difficulty").forEach(btn => {
