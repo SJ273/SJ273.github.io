@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SJ273のポートフォリオ - フラッピーペンギン</title>
+<style>
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  overflow: hidden;
+  background: black;
+}
+
+canvas {
+  display: block;
+  margin: auto;
+  background: #70c5ce;
+}
+  #startScreen {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.6);
+    color: white;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    font-size: 20px;
+  }
+  button {
+    padding: 10px 20px;
+    font-size: 18px;
+    margin-top: 15px;
+  }
+</style>
+</head>
+<body>
+<img id="birdGif" src="oth_pen40.gif" style="
+  position: absolute;
+  width: 34px;
+  height: 34px;
+  pointer-events: none;
+  z-index: 10;
+">
+<div id="rotateWarning" style="
+  display:none;
+  position:fixed;
+  inset:0;
+  background:black;
+  color:white;
+  font-size:20px;
+  justify-content:center;
+  align-items:center;
+  text-align:center;
+  z-index:999;
+">
+  縦向きでプレイしてください。
+</div>
+
+<canvas id="game"></canvas>
+
+<div id="startScreen">
+  <h2>フラッピーペンギン</h2>
+  <p>スペース／タップでジャンプ</p>
+  <button id="startBtn">スタート</button>
+</div>
+
+<script>
+
+const pipeImg = new Image();
+pipeImg.src = "pipe.png";
+
+const bgImg = new Image();
+bgImg.src = "bg.png";
+
+const PIPE_W = 52;
+const PIPE_H = 640;
+
+const canvas = document.getElementById("game");
+const ctx = canvas.getContext("2d");
+
+const birdGif = document.getElementById("birdGif");
+
+const rotateWarning = document.getElementById("rotateWarning");
+
+function isMobile() {
+  return /iPhone|Android.+Mobile/.test(navigator.userAgent);
+}
+
+function resize() {
+  const aspect = 9 / 16;
+  let w = window.innerWidth;
+  let h = window.innerHeight;
+
+  if (isMobile() && w > h) {
+    rotateWarning.style.display = "flex";
+  } else {
+    rotateWarning.style.display = "none";
+  }
+
+  if (w / h > aspect) {
+    canvas.height = h;
+    canvas.width = h * aspect;
+  } else {
+    canvas.width = w;
+    canvas.height = w / aspect;
+  }
+}
+
+addEventListener("resize", resize);
+resize();
+
+let bird, pipes, frame, score, highScore, gameOver, started;
+let dying = false;
+let deathType = null;
+
+let birdRotate = 0;
+
+highScore = localStorage.getItem("flappyHigh") || 0;
+
+function playSound(src) {
+  const s = new Audio(src);
+  s.play();
+}
+
+birdGif.style.display = "none";
+
+function reset() {
+  bird = { x: 60, y: canvas.height / 2, vy: 0, vx: 0, w: 34, h: 34 };
+  birdRotate = 0;
+  birdGif.style.transform = "rotate(0deg)";
+  pipes = [];
+  frame = 0;
+  score = 0;
+  gameOver = false;
+  started = true;
+  deathType = null;
+  birdGif.src = "oth_pen40.gif";
+  birdGif.style.display = "block";
+}
+
+function jump() {
+  if (!started || dying) return;
+  if (gameOver) {
+    reset();
+    return;
+  }
+  bird.vy = -7;
+  playSound("ニュッ2.mp3");
+}
+
+let canJump = true;
+
+document.addEventListener("keydown", e => {
+  if (e.code === "Space" && canJump) {
+    jump();
+    canJump = false;
+  }
+});
+
+document.addEventListener("keyup", e => {
+  if (e.code === "Space") {
+    canJump = true;
+  }
+});
+
+canvas.addEventListener("pointerdown", jump);
+
+function update() {
+  if (!started || !bird) return;
+
+  if (bird && bird.y < 0 && !dying && !gameOver) {
+    bird.y = 0;
+    bird.vy = 0;
+  }
+
+if (dying) {
+  bird.vy += 0.6;
+  bird.y += bird.vy;
+  bird.x += bird.vx || 0;
+
+  if (bird.y > canvas.height) {
+    gameOver = true;
+    dying = false;
+
+    if (score > highScore) {
+      highScore = score;
+      localStorage.setItem("flappyHigh", highScore);
+    }
+  }
+  return;
+}
+
+  if (!dying && bird.y + bird.h > canvas.height) {
+    deathType = "fall";
+    endGame();
+  }
+
+  if (!started || gameOver) return;
+
+  frame++;
+  bird.vy += 0.4;
+  bird.y += bird.vy;
+
+  if (frame % 90 === 0) {
+    const gap = 130;
+    const top = Math.random() * (canvas.height - gap - 150) + 50;
+    pipes.push({ x: canvas.width, top, gap, passed: false });
+  }
+
+pipes.forEach(p => {
+  p.x -= 2;
+
+  if (!p.passed && p.x + PIPE_W < bird.x) {
+    score++;
+    p.passed = true;
+  }
+
+  if (
+    bird.x + bird.w > p.x &&
+    bird.x < p.x + PIPE_W &&
+    (bird.y < p.top || bird.y + bird.h > p.top + p.gap)
+  ) {
+    deathType = "pipe";
+    endGame();
+  }
+});
+
+  pipes = pipes.filter(p => p.x > -60);
+}
+
+function endGame() {
+  if (dying || gameOver) return;
+
+  dying = true;
+
+  birdGif.src = "pen1_55.gif";
+
+  if (deathType === "pipe") {
+    bird.vx = -2;
+    bird.vy = -6;
+    playSound("重いパンチ2.mp3");
+    birdRotate = 0;
+  } else {
+    bird.vy = 6;
+  }
+}
+
+function draw() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  if (bgImg.complete) {
+    ctx.drawImage(bgImg, 0, 0, canvas.width, canvas.height);
+  }
+
+  if (!started) return;
+
+  pipes.forEach(p => {
+    ctx.save();
+    ctx.translate(p.x + 26, p.top);
+    ctx.scale(1, -1);
+    ctx.drawImage(pipeImg, -26, 0, 52, PIPE_H);
+    ctx.restore();
+
+    ctx.drawImage(pipeImg, p.x, p.top + p.gap, 52, PIPE_H);
+  });
+
+  if (started && bird && !gameOver) {
+    const rect = canvas.getBoundingClientRect();
+
+    if (dying && deathType === "pipe") {
+      birdRotate -= 6;
+      birdGif.style.transform = `rotate(${birdRotate}deg)`;
+    }
+
+    birdGif.style.display = "block";
+    birdGif.style.left = rect.left + bird.x + "px";
+    birdGif.style.top  = rect.top  + bird.y + "px";
+  } else {
+    birdGif.style.display = "none";
+  }
+
+  ctx.fillStyle = "black";
+  ctx.font = "22px sans-serif";
+  ctx.fillText(score, canvas.width / 2 - 5, 40);
+
+  ctx.font = "14px sans-serif";
+  ctx.fillText("ハイスコア： " + highScore, 10, 20);
+
+  if (gameOver) {
+    ctx.save();
+    ctx.fillStyle = "black";
+    ctx.textAlign = "center";
+    ctx.font = "26px sans-serif";
+    ctx.fillText("GAME OVER", canvas.width / 2, canvas.height / 2);
+    ctx.font = "14px sans-serif";
+    ctx.fillText(
+      "スペース／タップでリトライ",
+      canvas.width / 2,
+      canvas.height / 2 + 30
+    );
+    ctx.restore();
+  }
+}
+
+function loop() {
+  update();
+  draw();
+  requestAnimationFrame(loop);
+}
+loop();
+
+document.getElementById("startBtn").onclick = () => {
+  document.getElementById("startScreen").style.display = "none";
+  reset();
+};
+
+</script>
+</body>
+</html>
