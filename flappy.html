@@ -12,28 +12,27 @@ html, body {
   overflow: hidden;
   background: black;
 }
-
 canvas {
   display: block;
   margin: auto;
   background: #70c5ce;
 }
-  #startScreen {
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,0.6);
-    color: white;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    font-size: 20px;
-  }
-  button {
-    padding: 10px 20px;
-    font-size: 18px;
-    margin-top: 15px;
-  }
+#startScreen {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.6);
+  color: white;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  font-size: 20px;
+}
+button {
+  padding: 10px 20px;
+  font-size: 18px;
+  margin-top: 15px;
+}
 </style>
 </head>
 <body>
@@ -68,7 +67,6 @@ canvas {
 </div>
 
 <script>
-
 const pipeImg = new Image();
 pipeImg.src = "pipe.png";
 
@@ -82,7 +80,6 @@ const canvas = document.getElementById("game");
 const ctx = canvas.getContext("2d");
 
 const birdGif = document.getElementById("birdGif");
-
 const rotateWarning = document.getElementById("rotateWarning");
 
 function isMobile() {
@@ -112,33 +109,37 @@ function resize() {
 addEventListener("resize", resize);
 resize();
 
-let bird, pipes, frame, score, highScore, gameOver, started;
+let bird = null;
+let pipes = [];
+let score = 0;
+let highScore = localStorage.getItem("flappyHigh") || 0;
+let gameOver = false;
+let started = false;
 let dying = false;
 let deathType = null;
-
 let birdRotate = 0;
 
-highScore = localStorage.getItem("flappyHigh") || 0;
+let lastTime = 0;
+let lastPipeTime = 0;
 
 function playSound(src) {
   const s = new Audio(src);
   s.play();
 }
 
-birdGif.style.display = "none";
-
 function reset() {
   bird = { x: 60, y: canvas.height / 2, vy: 0, vx: 0, w: 34, h: 34 };
   birdRotate = 0;
   birdGif.style.transform = "rotate(0deg)";
   pipes = [];
-  frame = 0;
   score = 0;
   gameOver = false;
   started = true;
+  dying = false;
   deathType = null;
   birdGif.src = "oth_pen40.gif";
   birdGif.style.display = "block";
+  lastPipeTime = 0;
 }
 
 function jump() {
@@ -147,51 +148,40 @@ function jump() {
     reset();
     return;
   }
-  bird.vy = -7;
+  bird.vy = -450;
   playSound("ニュッ2.mp3");
 }
 
 let canJump = true;
-
 document.addEventListener("keydown", e => {
   if (e.code === "Space" && canJump) {
     jump();
     canJump = false;
   }
 });
-
 document.addEventListener("keyup", e => {
-  if (e.code === "Space") {
-    canJump = true;
-  }
+  if (e.code === "Space") canJump = true;
 });
-
 canvas.addEventListener("pointerdown", jump);
 
-function update() {
+function update(deltaTime) {
   if (!started || !bird) return;
 
-  if (bird && bird.y < 0 && !dying && !gameOver) {
-    bird.y = 0;
-    bird.vy = 0;
-  }
+  if (dying) {
+    bird.vy += 1500 * deltaTime;
+    bird.y += bird.vy * deltaTime;
+    bird.x += (bird.vx || 0) * deltaTime;
 
-if (dying) {
-  bird.vy += 0.6;
-  bird.y += bird.vy;
-  bird.x += bird.vx || 0;
-
-  if (bird.y > canvas.height) {
-    gameOver = true;
-    dying = false;
-
-    if (score > highScore) {
-      highScore = score;
-      localStorage.setItem("flappyHigh", highScore);
+    if (bird.y > canvas.height) {
+      gameOver = true;
+      dying = false;
+      if (score > highScore) {
+        highScore = score;
+        localStorage.setItem("flappyHigh", highScore);
+      }
     }
+    return;
   }
-  return;
-}
 
   if (!dying && bird.y + bird.h > canvas.height) {
     deathType = "fall";
@@ -200,51 +190,53 @@ if (dying) {
 
   if (!started || gameOver) return;
 
-  frame++;
-  bird.vy += 0.4;
-  bird.y += bird.vy;
+  bird.vy += 1500 * deltaTime;
+  bird.y += bird.vy * deltaTime;
 
-  if (frame % 90 === 0) {
+  lastPipeTime += deltaTime;
+  if (lastPipeTime > 1.5) {
+    lastPipeTime = 0;
     const gap = 130;
     const top = Math.random() * (canvas.height - gap - 150) + 50;
     pipes.push({ x: canvas.width, top, gap, passed: false });
   }
 
-pipes.forEach(p => {
-  p.x -= 2;
+  if (pipes) {
+    pipes.forEach(p => {
+      p.x -= 200 * deltaTime;
 
-  if (!p.passed && p.x + PIPE_W < bird.x) {
-    score++;
-    p.passed = true;
+      if (!p.passed && p.x + PIPE_W < bird.x) {
+        score++;
+        p.passed = true;
+      }
+
+      if (
+        bird.x + bird.w > p.x &&
+        bird.x < p.x + PIPE_W &&
+        (bird.y < p.top || bird.y + bird.h > p.top + p.gap)
+      ) {
+        deathType = "pipe";
+        endGame();
+      }
+    });
+
+    pipes = pipes.filter(p => p.x > -60);
   }
-
-  if (
-    bird.x + bird.w > p.x &&
-    bird.x < p.x + PIPE_W &&
-    (bird.y < p.top || bird.y + bird.h > p.top + p.gap)
-  ) {
-    deathType = "pipe";
-    endGame();
-  }
-});
-
-  pipes = pipes.filter(p => p.x > -60);
 }
 
 function endGame() {
   if (dying || gameOver) return;
 
   dying = true;
-
   birdGif.src = "pen1_55.gif";
 
   if (deathType === "pipe") {
-    bird.vx = -2;
-    bird.vy = -6;
+    bird.vx = -200;
+    bird.vy = -600;
     playSound("重いパンチ2.mp3");
     birdRotate = 0;
   } else {
-    bird.vy = 6;
+    bird.vy = 600;
   }
 }
 
@@ -255,29 +247,26 @@ function draw() {
     ctx.drawImage(bgImg, 0, 0, canvas.width, canvas.height);
   }
 
-  if (!started) return;
-
-  pipes.forEach(p => {
-    ctx.save();
-    ctx.translate(p.x + 26, p.top);
-    ctx.scale(1, -1);
-    ctx.drawImage(pipeImg, -26, 0, 52, PIPE_H);
-    ctx.restore();
-
-    ctx.drawImage(pipeImg, p.x, p.top + p.gap, 52, PIPE_H);
-  });
+  if (pipes) {
+    pipes.forEach(p => {
+      ctx.save();
+      ctx.translate(p.x + 26, p.top);
+      ctx.scale(1, -1);
+      ctx.drawImage(pipeImg, -26, 0, 52, PIPE_H);
+      ctx.restore();
+      ctx.drawImage(pipeImg, p.x, p.top + p.gap, 52, PIPE_H);
+    });
+  }
 
   if (started && bird && !gameOver) {
     const rect = canvas.getBoundingClientRect();
-
     if (dying && deathType === "pipe") {
       birdRotate -= 6;
       birdGif.style.transform = `rotate(${birdRotate}deg)`;
     }
-
     birdGif.style.display = "block";
     birdGif.style.left = rect.left + bird.x + "px";
-    birdGif.style.top  = rect.top  + bird.y + "px";
+    birdGif.style.top = rect.top + bird.y + "px";
   } else {
     birdGif.style.display = "none";
   }
@@ -305,18 +294,21 @@ function draw() {
   }
 }
 
-function loop() {
-  update();
+function loop(timestamp) {
+  if (!lastTime) lastTime = timestamp;
+  const deltaTime = (timestamp - lastTime) / 1000;
+  lastTime = timestamp;
+
+  update(deltaTime);
   draw();
   requestAnimationFrame(loop);
 }
-loop();
+requestAnimationFrame(loop);
 
 document.getElementById("startBtn").onclick = () => {
   document.getElementById("startScreen").style.display = "none";
   reset();
 };
-
 </script>
 </body>
 </html>
