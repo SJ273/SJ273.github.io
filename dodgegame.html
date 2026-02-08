@@ -132,6 +132,10 @@ preloadImages.forEach(src => {
   const img = new Image();
   img.src = src;
 });
+
+const FIXED_DT = 1 / 60;
+let accumulator = 0;
+let lastTime = 0;
   
 let enemies = [];
 let speed = 3;
@@ -255,48 +259,58 @@ function endGame() {
   updateDifficultyButtons();
 }
 
-let lastTime = 0;
-
 function loop(timestamp) {
   if (gameOver || !gameStarted) return;
 
   if (!lastTime) lastTime = timestamp;
-  const delta = (timestamp - lastTime) / 1000;
+  let delta = (timestamp - lastTime) / 1000;
   lastTime = timestamp;
 
+  if (delta > 0.1) delta = 0.1;
+
+  accumulator += delta;
+
+  while (accumulator >= FIXED_DT) {
+    fixedUpdate(FIXED_DT);
+    accumulator -= FIXED_DT;
+  }
+
+  requestAnimationFrame(loop);
+}
+
+function fixedUpdate(dt) {
   const rect = game.getBoundingClientRect();
   const set = difficultySettings[currentDifficulty];
 
   let px = parseFloat(player.style.left) || 0;
   const moveSpeed = 400;
   let dx = targetX - px;
-  const step = moveSpeed * delta;
+  const step = moveSpeed * dt;
 
-  if (Math.abs(dx) <= step) {
-    px = targetX;
-  } else {
-    px += dx > 0 ? step : -step;
-  }
+  if (Math.abs(dx) <= step) px = targetX;
+  else px += dx > 0 ? step : -step;
+
   px = Math.max(0, Math.min(rect.width - player.offsetWidth, px));
   player.style.left = px + "px";
 
-  bgY += speed * delta * 60 / 2;
+  bgY += speed * dt * 60 / 2;
   game.style.backgroundPosition = `0px ${bgY}px`;
 
-  enemies.forEach((e, index) => {
+  enemies.forEach(e => {
     if (currentDifficulty === "impossible") {
-      e.dataset.y = Number(e.dataset.y) + speed * delta * 60;
+      e.dataset.y = Number(e.dataset.y) + set.speed * dt * 60;
       e.style.top = e.dataset.y + "px";
 
-      if (hit(player, e)) { endGame(); return; }
+      if (hit(player, e)) endGame();
       if (e.dataset.y > 480) e.dataset.y = -50;
+
     } else {
       let y = Number(e.dataset.y);
-      y += speed * e.dataset.speed * delta * 60;
+      y += speed * e.dataset.speed * dt * 60;
       e.dataset.y = y;
       e.style.top = y + "px";
 
-      if (hit(player, e)) { endGame(); return; }
+      if (hit(player, e)) endGame();
 
       if (y > 480) {
         resetEnemy(e);
@@ -308,8 +322,7 @@ function loop(timestamp) {
           createEnemy();
         }
 
-        speed += set.accel * delta * 60;
-
+        speed += set.accel * dt * 60;
         if (speed > set.speedMax * 1.2) speed = set.speedMax * 1.2;
       }
     }
@@ -320,8 +333,6 @@ function loop(timestamp) {
       createEnemy();
     }
   }
-
-  requestAnimationFrame(loop);
 }
 
 function startGame() {
@@ -350,7 +361,9 @@ function startGame() {
   gameOver = false;
   player.src = "pen1_34.gif";
   gameStarted = true;
-  loop();
+  lastTime = 0;
+  accumulator = 0;
+  requestAnimationFrame(loop);
 }
 
 const allDifficultyButtons = document.querySelectorAll(".difficulty");
