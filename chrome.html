@@ -5,112 +5,56 @@
   if (document.referrer.indexOf('sj273.github.io') === -1) {
       window.location.href = 'https://sj273.github.io/redirect';                
   }
-</script>
 <meta charset="UTF-8">
 <title>SJ273のポートフォリオ - 恐竜ゲーム</title>
 <link rel="stylesheet" href="style.css">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-
 <style>
-html, body {
-  margin: 0;
-  padding: 0;
-  background: #fff;
-  touch-action: manipulation;
-  font-family: sans-serif;
-}
-
-#container {
-  display: flex;
-  justify-content: center;
-}
-
+html, body { margin:0; padding:0; font-family:sans-serif; }
+#container { display:flex; justify-content:center; }
 #game {
-  width: 100%;
-  max-width: 700px;
-  height: 200px;
-  background: #fff;
-  border: 2px solid #000;
-  position: relative;
-  overflow: hidden;
+  width:100%;
+  max-width:700px;
+  aspect-ratio:7/2;
+  background:#fff; border:2px solid #000; position:relative; overflow:hidden;
 }
-
-.night {
-  background: #222;
-  color: #fff;
-}
-
 #ground {
-  position: absolute;
-  bottom: 0;
-  width: 200%;
-  height: 16px;
-  background: url("地面.png") repeat-x;
+  position:absolute; bottom:0; width:200%; height:16px;
+  background:url("地面.png") repeat-x;
+  background-size:auto 100%;
+  animation: scrollGround linear infinite;
+  animation-duration:133ms;
 }
+@keyframes scrollGround { 0%{background-position-x:0;}100%{background-position-x:40px;} }
 
 #dino {
-  width: 48px;
-  height: 48px;
-  position: absolute;
-  left: 60px;
-  bottom: 16px;
-  background: url("pen1_80.gif")
-              no-repeat center / contain;
+  width:48px; height:48px;
+  position:absolute; left:60px; bottom:16px;
+  background:url("pen1_80.gif") no-repeat center/contain;
 }
 
 .obstacle {
-  position: absolute;
-  bottom: 16px;
-  width: 32px;
-  background-image: url("サボテン.png");
-  background-repeat: no-repeat;
-  background-position: bottom center;
-  background-size: 100% 100%;
+  position:absolute; bottom:16px; width:32px;
+  background:url("サボテン.png") no-repeat bottom center;
+  background-size:100% 100%;
 }
-
 .bird {
-  width: 40px;
-  height: 28px;
-  bottom: 80px;
-  background: url("鳥.png") no-repeat center / contain;
+  width:40px; height:28px;
+  position:absolute;
+  background:url("鳥.png") no-repeat center/contain;
+  transform-origin: bottom left;
   animation: flap 0.4s infinite;
 }
+@keyframes flap { 0%,100%{transform:translateY(0);}50%{transform:translateY(-6px);} }
 
-@keyframes flap {
-  0%,100% { transform: translateY(0); }
-  50% { transform: translateY(-6px); }
-}
-
-#score, #hiscore {
-  position: absolute;
-  top: 6px;
-  font-size: 14px;
-}
-
-#score { right: 10px; }
-#hiscore { left: 10px; }
-
+#score,#hiscore { position:absolute; top:6px; font-size:14px; }
+#score{right:10px;} #hiscore{left:10px;}
 .overlay {
-  position: absolute;
-  inset: 0;
-  background: rgba(255,255,255,0.9);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: 20px;
-  z-index: 10;
+  position:absolute; inset:0; background:rgba(255,255,255,0.9);
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  font-size:20px; z-index:10;
 }
-
-.night .overlay {
-  background: rgba(0,0,0,0.85);
-}
-
-button {
-  margin-top: 10px;
-  padding: 10px 20px;
-  font-size: 16px;
-}
+button { margin-top:10px; padding:10px 20px; font-size:16px; }
 </style>
 </head>
 <body>
@@ -124,15 +68,12 @@ button {
   <div id="game">
     <div id="ground"></div>
     <div id="dino"></div>
-
     <div id="hiscore">0</div>
     <div id="score">0</div>
-
     <div id="title" class="overlay">
       <p>恐竜ゲーム</p>
       <button id="startBtn">スタート</button>
     </div>
-
     <div id="gameover" class="overlay" style="display:none">
       <p>ゲームオーバー</p>
       <button id="retryBtn">もう一度</button>
@@ -153,8 +94,8 @@ Chromeの恐竜が走るゲームを再現してみた。名前が「恐竜ゲ�
 <script src="marquee.js"></script>
 <script>
 const game = document.getElementById("game");
-const dino = document.getElementById("dino");
-const ground = document.getElementById("ground");
+const dinoEl = document.getElementById("dino");
+const groundEl = document.getElementById("ground");
 const scoreEl = document.getElementById("score");
 const hiEl = document.getElementById("hiscore");
 const title = document.getElementById("title");
@@ -164,166 +105,160 @@ const jumpSE = new Audio("ニュッ2.mp3");
 const overSE = new Audio("しょげる.mp3");
 const scoreSE = new Audio("決定ボタンを押す17.mp3");
 
-const preloadImages = [
-  "pen1_80.gif",
-  "pen1_55.gif",
-  "サボテン.png",
-  "鳥.png",
-  "地面.png"
-];
+const preloadImages = ["pen1_80.gif","pen1_55.gif","サボテン.png","鳥.png","地面.png"];
+preloadImages.forEach(src=>{const img=new Image(); img.src=src;});
 
-preloadImages.forEach(src => {
-  const img = new Image();
-  img.src = src;
-});
-
-let y = 0, vy = 0;
-const gravity = -2200;
-const jumpPower = 900;
-
-let groundX = 0;
-let speed = 300;
-let score = 0;
-scoreEl.textContent = "スコア：" + score;
+let dinoY=0, vy=0;
+const gravity=-2200, jumpPower=900;
+let speed=300, score=0;
 let hiScore = localStorage.getItem("hi") || 0;
-hiEl.textContent = "ハイスコア：" + hiScore;
+hiEl.textContent = "ハイスコア："+hiScore;
+let playing=false;
+let obstacles=[];
+let lastTime=null, spawnTimer=0;
+let spawnInterval=1.4;
+let gameOverAnimation=false;
+let isJumping = false;
 
-let playing = false;
-let obstacles = [];
-let lastTime = null;
-let spawnTimer = 0;
-
-function hit(a, b, ma = 8, mb = 8) {
-  const ar = a.getBoundingClientRect();
-  const br = b.getBoundingClientRect();
-
-  return !(
-    ar.right - ma < br.left + mb ||
-    ar.left + ma > br.right - mb ||
-    ar.bottom - ma < br.top + mb ||
-    ar.top + ma > br.bottom - mb
-  );
+function hit(a,b,ma=8,mb=8){
+  const ar=a.getBoundingClientRect();
+  const br=b.getBoundingClientRect();
+  return !(ar.right-ma<br.left+mb||ar.left+ma>br.right-mb||ar.bottom-ma<br.top+mb||ar.top+ma>br.bottom-mb);
 }
 
-function spawnObstacle() {
+function updateGroundSpeed(){
+  const duration = 40 / speed * 1000;
+  groundEl.style.animationDuration = duration + "ms";
+}
+
+function spawnObstacle(){
   const o = document.createElement("div");
 
-  if (Math.random() < 0.25) {
+  let birdRate = 0.25;
+  if(score >= 50) birdRate = 0.4;
+  if(score >= 100) birdRate = 0.5;
+  if(score >= 150) birdRate = 0.6;
+
+  if(Math.random() < birdRate){
     o.className = "obstacle bird";
+    o.isBird = true;
+
+    if(score<50) o.y = 60 + Math.random()*20;
+    else if(score<150) o.y = Math.random()<0.5 ? 30 : 70;
+    else o.y = Math.random()<0.7 ? 20 : 80;
+
+    o.style.bottom = o.y + "px";
   } else {
     o.className = "obstacle";
-    o.style.height = (30 + Math.random() * 80) + "px";
+    o.isBird = false;
+    o.style.height = (30 + Math.random()*80) + "px";
+    o.y = 16;
+    o.style.bottom = o.y + "px";
   }
 
-  o.style.left = "100%";
+  o.x = game.clientWidth;
+  o.style.left = o.x + "px";
   game.appendChild(o);
   obstacles.push(o);
 }
 
-function loop(t) {
-  if (!lastTime) lastTime = t;
-  const dt = (t - lastTime) / 1000;
+function loop(t){
+  if(!lastTime) lastTime = t;
+  const dt = (t - lastTime)/1000;
   lastTime = t;
 
+if(playing || gameOverAnimation){
   vy += gravity * dt;
-  y += vy * dt;
-  if (playing) {
-    if (y < 0) { y = 0; vy = 0; }
+  dinoY += vy * dt;
+
+  if(dinoY <= 0 && !gameOverAnimation){
+    dinoY = 0;
+    vy = 0;
+    isJumping = false;
   }
-  dino.style.bottom = (y + 16) + "px";
+}
+  dinoEl.style.bottom = (dinoY + 16) + "px";
 
-  if (!playing && y <= -100) return;
-  if (playing) {
-  groundX -= speed * dt;
-  ground.style.transform = `translateX(${groundX % 40}px)`;
+  if(playing){
+    for(let i = obstacles.length - 1; i >= 0; i--){
+      const o = obstacles[i];
 
-  obstacles.forEach(o => {
-    o.style.left = (o.offsetLeft - speed * dt) + "px";
-    if (hit(dino, o, 10, o.classList.contains("bird") ? 12 : 6)) endGame();
-  });
+      const oSpeed = o.isBird ? speed * 1.1 : speed;
+      o.x -= oSpeed * dt;
+      o.style.left = o.x + "px";
 
-  obstacles = obstacles.filter(o => {
-    if (o.offsetLeft < -60) {
-      o.remove();
-      score++;
-      scoreEl.textContent = "スコア：" + score;
+      if(hit(dinoEl, o, 10, o.isBird?12:6)) endGame();
 
-      if (score % 10 === 0) scoreSE.play();
-      //if (score === 200) game.classList.add("night");
-
-      speed += 10;
-      return false;
+      if(o.x < -o.offsetWidth){
+        if(!o.isBird){
+          score++;
+          scoreEl.textContent = "スコア：" + score;
+          if(score % 10 === 0) scoreSE.play();
+          speed += 10;
+          updateGroundSpeed();
+          spawnInterval = Math.max(0.5, 1.4 - score*0.01);
+        }
+        o.remove();
+        obstacles.splice(i,1);
+      }
     }
-    return true;
-  });
 
-  spawnTimer += dt;
-  if (spawnTimer > 1.4) {
-    spawnObstacle();
-    spawnTimer = 0;
+    spawnTimer += dt;
+    if(spawnTimer > spawnInterval){
+      spawnObstacle();
+      spawnTimer = 0;
+    }
   }
-  }
+
   requestAnimationFrame(loop);
 }
 
-function jump() {
-  if (!playing || y !== 0) return;
+function jump(){
+  if(!playing || isJumping) return;
   vy = jumpPower;
   jumpSE.play();
+  isJumping = true;
 }
 
-game.addEventListener("pointerdown", e => {
-  e.preventDefault();
-  jump();
-});
-
+game.addEventListener("pointerdown", e => { e.preventDefault(); jump(); });
 document.addEventListener("keydown", e => {
-  if (e.code !== "Space") return;
+  if(e.code !== "Space") return;
+  if(e.repeat) return;
+
   e.preventDefault();
-  if (!playing) startGame();
-  else jump();
+
+  if(playing){
+    jump();
+  }
 });
 
-function startGame() {
-  title.style.display = "none";
-  gameover.style.display = "none";
-  game.classList.remove("night");
-
-  obstacles.forEach(o => o.remove());
-  obstacles = [];
-  y = vy = 0;
-  speed = 300;
-  score = 0;
-  scoreEl.textContent = "スコア：" + score;
-  lastTime = null;
-  playing = true;
-
-  dino.style.backgroundImage =
-    'url("pen1_80.gif")';
-
+function startGame(){
+  title.style.display="none";
+  gameover.style.display="none";
+  obstacles.forEach(o=>o.remove());
+  obstacles=[];
+  dinoY=vy=0; speed=300; score=0; spawnInterval=1.4;
+  scoreEl.textContent="スコア："+score;
+  lastTime=null;
+  isJumping = false;
+  playing=true; gameOverAnimation=false;
+  dinoEl.style.backgroundImage='url("pen1_80.gif")';
+  updateGroundSpeed();
   requestAnimationFrame(loop);
 }
 
-function endGame() {
-  playing = false;
-  gameover.style.display = "flex";
+function endGame(){
+  playing=false;
+  gameover.style.display="flex";
   overSE.play();
-
-  dino.style.backgroundImage =
-    'url("pen1_55.gif")';
-
-  vy = 900;
-  
-  if (score > hiScore) {
-    hiScore = score;
-    localStorage.setItem("hi", hiScore);
-    hiEl.textContent = "ハイスコア：" + hiScore;
-  }
+  dinoEl.style.backgroundImage='url("pen1_55.gif")';
+  vy=900;
+  gameOverAnimation=true;
+  if(score>hiScore){ hiScore=score; localStorage.setItem("hi",hiScore); hiEl.textContent="ハイスコア："+hiScore; }
 }
 
-document.getElementById("startBtn").onclick = startGame;
-document.getElementById("retryBtn").onclick = startGame;
+document.getElementById("startBtn").onclick=startGame;
+document.getElementById("retryBtn").onclick=startGame;
 </script>
-
 </body>
 </html>
