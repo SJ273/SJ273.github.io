@@ -323,7 +323,9 @@ function fixedUpdate(dt) {
         }
 
         speed += set.accel * dt * 60;
-        if (speed > set.speedMax * 1.2) speed = set.speedMax * 1.2;
+        const minSpeed = set.speed;
+        const maxSpeed = set.speed * 2;
+        speed = Math.min(Math.max(speed, minSpeed), maxSpeed);
       }
     }
   });
