@@ -255,33 +255,44 @@ function endGame() {
   updateDifficultyButtons();
 }
 
-function loop() {
+let lastTime = 0;
+
+function loop(timestamp) {
   if (gameOver || !gameStarted) return;
 
-  let px = parseFloat(player.style.left) || 0;
-  let dx = targetX - px;
-  const maxStep = 10;
-  if(dx > maxStep) dx = maxStep;
-  if(dx < -maxStep) dx = -maxStep;
-  px += dx * 0.8;
+  if (!lastTime) lastTime = timestamp;
+  const delta = (timestamp - lastTime) / 1000;
+  lastTime = timestamp;
+
   const rect = game.getBoundingClientRect();
+  const set = difficultySettings[currentDifficulty];
+
+  let px = parseFloat(player.style.left) || 0;
+  const moveSpeed = 400;
+  let dx = targetX - px;
+  const step = moveSpeed * delta;
+
+  if (Math.abs(dx) <= step) {
+    px = targetX;
+  } else {
+    px += dx > 0 ? step : -step;
+  }
   px = Math.max(0, Math.min(rect.width - player.offsetWidth, px));
   player.style.left = px + "px";
 
-  bgY += speed / 2;
+  bgY += speed * delta * 60 / 2;
   game.style.backgroundPosition = `0px ${bgY}px`;
 
-  const set = difficultySettings[currentDifficulty];
-
-  enemies.forEach(e => {
+  enemies.forEach((e, index) => {
     if (currentDifficulty === "impossible") {
-      e.dataset.y = Number(e.dataset.y) + speed;
+      e.dataset.y = Number(e.dataset.y) + speed * delta * 60;
       e.style.top = e.dataset.y + "px";
+
       if (hit(player, e)) { endGame(); return; }
       if (e.dataset.y > 480) e.dataset.y = -50;
     } else {
       let y = Number(e.dataset.y);
-      y += speed * e.dataset.speed;
+      y += speed * e.dataset.speed * delta * 60;
       e.dataset.y = y;
       e.style.top = y + "px";
 
@@ -293,11 +304,22 @@ function loop() {
         scoreEl.textContent = score;
         playSound("決定ボタンを押す40.mp3");
 
-        if (score % 5 === 0) createEnemy();
-        speed += set.accel;
+        if (score % Math.max(1, 6 - set.enemies) === 0) {
+          createEnemy();
+        }
+
+        speed += set.accel * delta * 60;
+
+        if (speed > set.speedMax * 1.2) speed = set.speedMax * 1.2;
       }
     }
   });
+
+  if (currentDifficulty !== "impossible") {
+    while (enemies.length < set.maxEnemies) {
+      createEnemy();
+    }
+  }
 
   requestAnimationFrame(loop);
 }
