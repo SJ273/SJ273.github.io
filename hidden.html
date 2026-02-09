@@ -7,8 +7,14 @@
   }
 </script>
 <script type="text/javascript">
-function showalert(){
-	alert("やれよ！！！！！！！！！！");
+function warning(){
+	alert("このゲームに限った話ではないけど、音が流れるので音量注意。");
+	location.href = "/chrome";
+}
+</script>
+<script type="text/javascript">
+function joke(){
+	alert("やれよ！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！");
 	alert("なんてね。冗談です。ごめんなさい。");
 	alert("まあでももし「やっぱりやりたい」ってなったらまたここに来てね。");
 	location.href = "/";
@@ -30,9 +36,9 @@ function showalert(){
    <div style="height: 6px;"></div>
    せっかくこのページに来たんだしここ限定で遊べるゲームでもやるかい？
 <div style="height: 2em;"></div>
-<a href="/chrome">遊んでいく</a>
+<a href="#" onclick="warning(); return false;">遊んでいく</a>
 <div style="height: 6px;"></div>
-<a href="#" onclick="showalert(); return false;">ホームに戻る</a>
+<a href="#" onclick="joke(); return false;">ホームに戻る</a>
 <h1 class="section-title" data-direction="right">YOU FOUND ME</h1>
 <font size="2">2025-2026 SJ273</font>
 <div style="height: 2em;"></div>
