@@ -17,7 +17,16 @@ html, body { margin:0; padding:0; font-family:sans-serif; }
   width:100%;
   max-width:700px;
   aspect-ratio:7/2;
-  background:#fff; border:2px solid #000; position:relative; overflow:hidden;
+  background:#fff;
+  border:2px solid #000;
+  position:relative;
+  overflow:hidden;
+}
+@media (max-width: 600px) {
+  #game {
+    height: 42vh;
+    aspect-ratio: auto;
+  }
 }
 #ground {
   position:absolute; bottom:0; width:200%; height:16px;
@@ -263,4 +272,5 @@ document.getElementById("retryBtn").onclick=startGame;
 </script>
 </body>
 </html>
+
 
