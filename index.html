@@ -6,9 +6,16 @@
   <title>SJ273のポートフォリオ</title>
 
   <link rel="stylesheet" href="style.css">
+<style>
+#hour-message {
+  font-size: 14px;
+}
+</style>
 </head>
 <body>
   <h1 class="section-title"　data-direction="left">SJ273</h1>
+  <div id="hour-message"></div>
+  <div style="height: 1em;"></div>
   <font size="6"><span style="font-weight: bold;"><font color="#00bfff">SJ273のポートフォリオ</font></span></font>
 　<div style="height: 2em;"></div>
   <img src="T085SRUUM8W-U08KTHJ0BM2-e5dcae8740b1-512.jpg"
@@ -125,5 +132,43 @@
 <font size="2">2025-2026 SJ273</font>
 <div style="height: 2em;"></div>
 <script src="marquee.js"></script>
+<script>
+const messages = [
+  "0時だ！まだ起きてる？",
+  "1時だ！そろそろ寝た方が良いんじゃない？",
+  "2時だ！こんなに遅くまで起きて大丈夫？",
+  "3時だ！世界が静かだ…",
+  "4時だ！鳥が先か、あなたが先か",
+  "5時だ！もう起きる？",
+  "6時だ！早起きだ！",
+  "7時だ！おはよう！",
+  "8時だ！朝ごはんはもう食べた？",
+  "9時だ！今日も始まるぞ！",
+  "10時だ！全集中！",
+  "11時だ！昼が近づいてきた",
+  "12時だ！ランチタイムだ！",
+  "13時だ！午後はここから？",
+  "14時だ！少し眠い…",
+  "15時だ！おやつ食ってバフかけろ！",
+  "16時だ！あと少し！",
+  "17時だ！お疲れ様です！",
+  "18時だ！空気が変わった",
+  "19時だ！今日の晩ごはんは何かな？",
+  "20時だ！一息つきますか",
+  "21時だ！今日はどうだった？",
+  "22時だ！夜更かし注意",
+  "23時だ！布団が我を呼んでいる"
+];
+
+function updateMessage() {
+  const hour = new Date().getHours();
+  const el = document.getElementById("hour-message");
+  if (!el) return;
+  el.textContent = messages[hour];
+}
+
+updateMessage();
+setInterval(updateMessage, 60 * 1000);
+</script>
 </body>
 </html>
