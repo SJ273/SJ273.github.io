@@ -6,6 +6,16 @@
   <title>SJ273のポートフォリオ - おみくじの確率</title>
 
   <link rel="stylesheet" href="style.css">
+<style>
+#secretSpot {
+  position: fixed;
+  bottom: 0;
+  right: 0;
+  width: 30px;
+  height: 30px;
+  z-index: 9999;
+}
+</style>
 </head>
 <body>
   <h1 class="section-title"　data-direction="left">PROBABILITY</h1>
@@ -58,6 +68,20 @@
 <h1 class="section-title" data-direction="right">PROBABILITY</h1>
 <font size="2">2025-2026 SJ273</font>
 <div style="height: 2em;"></div>
+<div id="secretSpot"></div>
 <script src="marquee.js"></script>
+<script>
+const chance = 0.03;
+
+const spot = document.getElementById("secretSpot");
+
+if (Math.random() < chance) {
+  spot.onclick = function() {
+    location.href = "hidden.html";
+  };
+} else {
+  spot.remove();
+}
+</script>
 </body>
 </html>
