@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SJ273のポートフォリオ - じゃんけんゲーム</title>
+<link rel="stylesheet" href="style.css">
+<style>
+
+body{
+font-family:sans-serif;
+text-align:center;
+margin-top:40px;
+}
+
+button{
+font-size:20px;
+padding:10px 20px;
+margin:5px;
+cursor:pointer;
+}
+
+#retry{
+display:none;
+margin-top:10px;
+}
+
+#cpuImg{
+margin:20px;
+}
+
+#result{
+font-size:22px;
+font-weight:bold;
+margin-top:10px;
+}
+
+#score{
+font-size:18px;
+margin-top:5px;
+}
+
+#newRecord{
+color:red;
+font-weight:bold;
+}
+
+</style>
+
+</head>
+<body>
+<h1 class="section-title">RPS GAME</h1>
+<div style="height: 1em;"></div>
+クリック／タップで出す手を選びます。
+<div style="height: 1em;"></div>
+<img id="cpuImg" src="pen1_01.gif">
+
+<p id="battle">相手：？</p>
+
+<p>連勝： <span id="win">0</span></p>
+<p>最高記録： <span id="high">0</span></p>
+
+<div id="buttons">
+<button onclick="play('グー')">グー</button>
+<button onclick="play('チョキ')">チョキ</button>
+<button onclick="play('パー')">パー</button>
+</div>
+
+<button id="retry" onclick="retryGame()">もう一回</button>
+
+<p id="result"></p>
+<p id="score"></p>
+<p id="newRecord"></p>
+<p id="taunt"></p>
+<div style="height: 2em;"></div>
+<a href="/">ホームに戻る</a>
+<h1 class="section-title" data-direction="right">RPS GAME</h1>
+<font size="2">2025-2026 SJ273</font>
+<div style="height: 2em;"></div>
+<script src="marquee.js"></script>
+<script>
+
+let win = 0;
+let playing = false;
+let high = localStorage.getItem("high") || 0;
+document.getElementById("high").textContent = high;
+
+const winMessages = [
+"やったね！",
+"ナイス！",
+"良いぞ！"
+];
+
+const drawMessages = [
+"あいこ！",
+"もう一回！",
+"勝負つかず！"
+];
+
+function play(player){
+if(playing) return;
+playing = true;
+const hands = ["グー","チョキ","パー"];
+const cpu = hands[Math.floor(Math.random()*3)];
+
+document.getElementById("battle").textContent = "相手：？";
+document.getElementById("result").textContent = "";
+
+setTimeout(function(){
+
+document.getElementById("battle").textContent =
+"自分：" + player + "　相手：" + cpu;
+
+let result = "";
+
+if(player === cpu){
+
+result = drawMessages[Math.floor(Math.random()*drawMessages.length)];
+playing = false;
+}
+
+else if(
+(player==="グー"&&cpu==="チョキ")||
+(player==="チョキ"&&cpu==="パー")||
+(player==="パー"&&cpu==="グー")
+){
+
+win++;
+
+result = win + "勝目！ " +
+winMessages[Math.floor(Math.random()*winMessages.length)];
+
+}
+
+else{
+
+let streak = win;
+
+result = "負けた…";
+
+document.getElementById("score").textContent =
+"今回の勝利数：" + streak;
+
+if(streak > high){
+document.getElementById("newRecord").textContent = "最高記録更新！！！";
+}
+
+if(streak==0){
+document.getElementById("cpuImg").src="pen1_02.gif";
+}
+else if(streak < 3){
+document.getElementById("cpuImg").src="pen1_57.gif";
+}
+else if(streak < 5){
+document.getElementById("cpuImg").src="oth_pen55.gif";
+}
+else if(streak < 10){
+document.getElementById("cpuImg").src="clp_pen05.gif";
+}
+else{
+document.getElementById("cpuImg").src="pen1_41.gif";
+}
+
+let taunt="";
+
+if(streak==0) taunt="もう一回やってみよう！";
+else if(streak<3) taunt="いい感じ！";
+else if(streak<5) taunt="中々だな！";
+else if(streak<10) taunt="すごい！";
+else taunt="もはやチーターだ！！！";
+
+document.getElementById("taunt").textContent = taunt;
+
+win = 0;
+
+document.getElementById("buttons").style.display="none";
+document.getElementById("retry").style.display="inline-block";
+
+}
+
+if(win > high){
+high = win;
+localStorage.setItem("high", high);
+}
+
+document.getElementById("win").textContent = win;
+document.getElementById("high").textContent = high;
+
+document.getElementById("result").textContent = result;
+
+},500);
+
+}
+
+function retryGame(){
+
+win = 0;
+
+document.getElementById("win").textContent = 0;
+document.getElementById("battle").textContent = "相手：？";
+document.getElementById("result").textContent = "";
+document.getElementById("score").textContent = "";
+document.getElementById("taunt").textContent = "";
+document.getElementById("newRecord").textContent = "";
+
+document.getElementById("cpuImg").src="pen1_01.gif";
+
+document.getElementById("buttons").style.display="block";
+document.getElementById("retry").style.display="none";
+
+}
+
+</script>
+
+</body>
+</html>
