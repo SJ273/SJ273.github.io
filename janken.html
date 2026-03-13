@@ -26,7 +26,8 @@ margin-top:10px;
 }
 
 #cpuImg{
-margin:20px;
+margin:20px auto;
+display:block;
 }
 
 #result{
@@ -175,7 +176,7 @@ win = 0;
 
 document.getElementById("buttons").style.display="none";
 document.getElementById("retry").style.display="inline-block";
-
+playing = false;
 }
 
 if(win > high){
@@ -205,9 +206,9 @@ document.getElementById("newRecord").textContent = "";
 
 document.getElementById("cpuImg").src="pen1_01.gif";
 
-document.getElementById("buttons").style.display="block";
+document.getElementById("buttons").style.display="";
 document.getElementById("retry").style.display="none";
-
+playing = false;
 }
 
 </script>
